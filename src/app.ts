@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 
-import { handleError } from './helpers/error';
 import httpLogger from './middlewares/httpLogger';
 import router from './routes/index';
+import { errorHandler } from './middlewares/errors';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -25,10 +25,6 @@ app.use((_req, _res, next) => {
   next(createError(404));
 });
 
-// error handler
-const errorHandler: express.ErrorRequestHandler = (err, _req, res) => {
-  handleError(err, res);
-};
 app.use(errorHandler);
 
 const port = process.env.PORT || '8000';
