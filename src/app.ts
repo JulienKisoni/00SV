@@ -5,10 +5,11 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
 import { handleError } from './helpers/error';
 import httpLogger from './middlewares/httpLogger';
 import router from './routes/index';
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app: express.Application = express();
 
