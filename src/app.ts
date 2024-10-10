@@ -6,6 +6,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import http from 'http';
+import { connect } from 'mongoose';
 
 import httpLogger from './middlewares/httpLogger';
 import router from './routes/index';
@@ -58,6 +59,24 @@ function onListening() {
   console.info(`Server is listening on ${bind}`);
 }
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+const init = async () => {
+  const DATABASE_URI = process.env.DATABASE_URI;
+  const DATABASE_NAME = process.env.DATABASE_NAME;
+  const errMsg = 'Could not connect to DB';
+  if (!DATABASE_URI || !DATABASE_NAME) {
+    console.error(errMsg, DATABASE_NAME, DATABASE_URI);
+    process.exit(1);
+  }
+  const connection_uri = `${DATABASE_URI}/${DATABASE_NAME}`;
+  try {
+    await connect(connection_uri);
+    console.log('Connected to DB');
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+init();

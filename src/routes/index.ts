@@ -6,11 +6,12 @@ import { productsRouter } from './products';
 import { cartItemsRouter } from './cartItems';
 import { orderRouters } from './orders';
 import { authRouter } from './auth';
+import { HTTP_STATUS_CODES } from '../types/enums';
 
 const router = express.Router();
 
 const getController = (_req: Request, res: Response) => {
-  res.status(200).json({ res: 'ok' });
+  res.status(HTTP_STATUS_CODES.OK).json({ res: 'ok' });
 };
 
 /* GET home page. */

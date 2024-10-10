@@ -2,12 +2,16 @@ import { sign, SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
 import { createError } from '../middlewares/errors';
+import { HTTP_STATUS_CODES } from '../types/enums';
 
 export const generateToken = async (): Promise<API_TYPES.Routes['business']['login']> => {
   const signAccessSecret = process.env.ACCESS_TOKEN_SECRET;
   const signRefreshSecret = process.env.REFRESH_TOKEN_SECRET;
   if (!signAccessSecret || !signRefreshSecret) {
-    const error = createError({ statusCode: 500, message: 'Could not find ACCESS_TOKEN_SECRET or REFRESH_TOKEN_SECRET env variable ' });
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG,
+      message: 'Could not find ACCESS_TOKEN_SECRET or REFRESH_TOKEN_SECRET env variable ',
+    });
     return { error };
   }
   const accessPayload = {
