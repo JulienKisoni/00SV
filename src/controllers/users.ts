@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import Joi, { type LanguageMessages } from 'joi';
 
-import type { User } from '../types/models';
+import type { IUserDocument } from '../types/models';
 import * as userBusiness from '../business/users';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
-type AddUserPayload = Omit<User, '_id' | 'storeId' | 'createdAt' | 'updatedAt'>;
+type AddUserPayload = Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'>;
 interface AddUserRequest<T> extends Request {
   body: T;
 }

@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-export type User = {
+export interface IUserDocument {
   _id: string;
   username: string;
   email: string;
@@ -8,4 +8,4 @@ export type User = {
   storeId?: string | Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
-};
+}

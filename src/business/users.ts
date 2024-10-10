@@ -1,10 +1,10 @@
-import type { User } from '../types/models';
+import { IUserDocument } from '../types/models';
 import { UserModel } from '../models/user';
 import { createError, GenericError } from '../middlewares/errors';
 import { encrypt } from '../utils/hash';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
-type AddUserPayload = Omit<User, '_id' | 'storeId' | 'createdAt' | 'updatedAt'>;
+type AddUserPayload = Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'>;
 type AddUserReturn = {
   error?: GenericError;
   userId?: string;

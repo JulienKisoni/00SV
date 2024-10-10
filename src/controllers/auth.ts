@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 
 import { createError } from '../middlewares/errors';
-import { loginBusiness } from '../business/auth';
+import * as authBusiness from '../business/auth';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
 export const loginCtrl = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,7 +27,7 @@ export const loginCtrl = async (req: Request, res: Response, next: NextFunction)
     const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, publicMessage: error.message, message: error.message });
     return next(err);
   } else if (value) {
-    const { error, tokens } = await loginBusiness(value);
+    const { error, tokens } = await authBusiness.login(value);
     if (error) {
       return next(error);
     }
