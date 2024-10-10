@@ -5,13 +5,15 @@ import type { IUserDocument } from '../types/models';
 import * as userBusiness from '../business/users';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
+import { IUserMethods } from 'src/models/user';
 
 type AddUserPayload = Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'>;
-interface AddUserRequest<T> extends Request {
+interface ExtendedRequest<T> extends Request {
   body: T;
+  user?: IUserMethods;
 }
 
-export const addUserCtrl = async (req: AddUserRequest<AddUserPayload>, res: Response, next: NextFunction) => {
+export const addUserCtrl = async (req: ExtendedRequest<AddUserPayload>, res: Response, next: NextFunction) => {
   const { email, password, username } = req.body;
 
   const usernameMessages: LanguageMessages = {
@@ -43,4 +45,14 @@ export const addUserCtrl = async (req: AddUserRequest<AddUserPayload>, res: Resp
     }
     res.status(HTTP_STATUS_CODES.CREATED).json({ userId });
   }
+};
+
+export const getUsers = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const { user } = req;
+  if (!user) {
+    const err = createError({ statusCode: HTTP_STATUS_CODES.FORBIDEN, message: 'No user associated with the request found' });
+    return next(err);
+  }
+  const users = await userBusiness.getUsers();
+  res.status(HTTP_STATUS_CODES.OK).json({ users });
 };

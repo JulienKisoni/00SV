@@ -24,6 +24,15 @@ namespace API_TYPES {
     login: TokenResponse;
   }
 
+  export interface DecodedToken {
+    email: string;
+    iat: number;
+    exp: number;
+    iss: string;
+    sub: string;
+    jti: string;
+  }
+
   export interface Routes {
     body: Body;
     business: Business;

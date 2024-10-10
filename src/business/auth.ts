@@ -26,7 +26,7 @@ export const login = async ({ email, password }: LoginPaylod): Promise<LoginResp
       return { error };
     }
   }
-  const { error, tokens } = await generateToken();
+  const { error, tokens } = await generateToken({ email: user.email, userId: user._id.toString() });
   if (error) {
     return { error };
   }

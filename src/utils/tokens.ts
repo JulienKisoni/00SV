@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
-export const generateToken = async (): Promise<API_TYPES.Routes['business']['login']> => {
+export const generateToken = async ({ email, userId }: { email: string; userId: string }): Promise<API_TYPES.Routes['business']['login']> => {
   const signAccessSecret = process.env.ACCESS_TOKEN_SECRET;
   const signRefreshSecret = process.env.REFRESH_TOKEN_SECRET;
   if (!signAccessSecret || !signRefreshSecret) {
@@ -15,26 +15,26 @@ export const generateToken = async (): Promise<API_TYPES.Routes['business']['log
     return { error };
   }
   const accessPayload = {
-    email: 'my_email',
+    email,
   };
   const accessOptions: SignOptions = {
     issuer: 'http://localhost:8000',
-    subject: 'userId',
+    subject: userId,
     jwtid: uuidv4(),
-    expiresIn: '1m',
+    expiresIn: '5m',
     header: {
       typ: 'Bearer',
       alg: 'HS256',
     },
   };
   const refreshPayload = {
-    email: 'my_email',
+    email,
   };
   const refreshOptions: SignOptions = {
     issuer: 'http://localhost:8000',
-    subject: 'userId',
+    subject: userId,
     jwtid: uuidv4(),
-    expiresIn: '5m',
+    expiresIn: '10m',
     header: {
       typ: 'Bearer',
       alg: 'HS256',

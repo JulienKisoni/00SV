@@ -1,5 +1,7 @@
+import omit from 'lodash.omit';
+
 import { IUserDocument } from '../types/models';
-import { UserModel } from '../models/user';
+import { IUserMethods, UserModel } from '../models/user';
 import { createError, GenericError } from '../middlewares/errors';
 import { encrypt } from '../utils/hash';
 import { HTTP_STATUS_CODES } from '../types/enums';
@@ -30,5 +32,15 @@ export const addUser = async ({ username, email, password }: AddUserPayload): Pr
     password: encryptedText,
   });
   const userId = result._id;
-  return { userId };
+  return { userId: userId.toString() };
+};
+
+export const getUsers = async (): Promise<Partial<IUserMethods>[]> => {
+  const users = await UserModel.find<IUserMethods>({}).lean().exec();
+  return (
+    users.map((user) => {
+      const transformed = omit(user, ['password', '__v']);
+      return transformed;
+    }) || []
+  );
 };

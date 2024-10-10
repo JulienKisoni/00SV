@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 
 export interface IUserDocument {
-  _id: string;
+  _id: string | Schema.Types.ObjectId;
   username: string;
   email: string;
   password: string;
