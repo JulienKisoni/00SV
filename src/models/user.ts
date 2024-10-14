@@ -93,7 +93,7 @@ const userSchema = new Schema<IUserDocument>(
       checkValidToken(decodedToken: API_TYPES.DecodedToken): boolean {
         const invalidToken = this.private?.invalidToken;
         const expiryAt: number = invalidToken?.expiryAt ? invalidToken.expiryAt / 1000 : 0;
-        return Boolean(invalidToken?.tokenId === decodedToken.jti && expiryAt < decodedToken.exp);
+        return Boolean(invalidToken?.tokenId === decodedToken.jti && expiryAt > 0 && expiryAt < decodedToken.exp);
       },
       async updateSelf(update: UpdateQuery<IUserDocument>): Promise<UpdateWriteOpResult> {
         return UserModel.updateOne({ _id: this._id }, update).exec();

@@ -8,5 +8,6 @@ const usersRouter = Router();
 usersRouter.get('/', userCtrl.getUsers);
 usersRouter.post('/signup', userCtrl.addUserCtrl);
 usersRouter.post('/invalidateToken', userMiddleware.isAdmin, userCtrl.invalidateToken);
+usersRouter.delete('/:userId', userCtrl.deleteUser);
 
 export { usersRouter };

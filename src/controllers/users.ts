@@ -10,8 +10,8 @@ import { regex } from '../helpers/constants';
 interface AddUserPayload extends Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'> {
   role: USER_ROLES;
 }
-interface ExtendedRequest<T> extends Request {
-  body: T;
+interface ExtendedRequest<B> extends Request {
+  body: B;
   user?: IUserMethods;
   tokenId?: string;
 }
@@ -79,5 +79,22 @@ export const invalidateToken = async (req: ExtendedRequest<{ userId: string }>, 
     return next(err);
   }
   await userBusiness.invalidateToken({ userId: value.userId });
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};
+
+export const deleteUser = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const messages: LanguageMessages = {
+    'any.required': 'Please provide a user id',
+    'string.pattern.base': 'Please provide a valid user id',
+  };
+  const schema = Joi.object<{ userId: string }>({
+    userId: Joi.string().regex(regex.mongoId).required().messages(messages),
+  });
+  const { error, value } = schema.validate(req.params, { stripUnknown: true });
+  if (error) {
+    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
+    return next(err);
+  }
+  await userBusiness.deleteOne({ userId: value.userId });
   res.status(HTTP_STATUS_CODES.OK).json({});
 };

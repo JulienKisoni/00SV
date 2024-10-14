@@ -94,3 +94,7 @@ export const invalidateToken = async ({ userId }: { userId: string }): Promise<v
     await user.updateSelf(update);
   }
 };
+
+export const deleteOne = async ({ userId }: { userId: string }) => {
+  return UserModel.deleteOne({ _id: userId }).exec();
+};

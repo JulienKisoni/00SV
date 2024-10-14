@@ -6,12 +6,13 @@ import { HTTP_STATUS_CODES } from '../types/enums';
 import { IUserMethods, UserModel } from '../models/user';
 import { nonSecureRoutes } from '../helpers/constants';
 
-interface ExtendedRequest extends Request {
+interface ExtendedRequest<B> extends Request {
   user?: IUserMethods;
   tokenId?: string;
+  body: B;
 }
 
-export const validateToken = async (req: ExtendedRequest, _res: Response, next: NextFunction) => {
+export const validateToken = async (req: ExtendedRequest<undefined>, _res: Response, next: NextFunction) => {
   const byPassToken = nonSecureRoutes.some((route) => {
     const { path, method } = req;
     return path.includes(route.path) && method.toLowerCase() === route.method.toLowerCase();
