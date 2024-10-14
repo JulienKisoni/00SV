@@ -4,20 +4,23 @@ namespace API_TYPES {
     password: string;
   };
   type Tokens = {
-    accessToken: string;
-    refreshToken: string;
+    accessToken?: string;
+    refreshToken?: string;
   };
   class GenericError extends Error {
     statusCode: number;
     publicMessage: string;
   }
-  interface TokenResponse {
+  export interface TokenResponse {
     error?: GenericError;
     tokens?: Tokens;
   }
 
   interface Body {
     login: LoginReq;
+    refreshToken: {
+      refreshToken: string;
+    };
   }
 
   interface Business {

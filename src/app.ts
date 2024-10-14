@@ -1,5 +1,7 @@
 /// <reference path="./types/types.ts" />
 
+import 'express-async-errors';
+
 import createError from 'http-errors';
 import express from 'express';
 import path from 'path';
@@ -9,6 +11,7 @@ import http from 'http';
 import { connect } from 'mongoose';
 
 import httpLogger from './middlewares/httpLogger';
+import { validateToken } from './middlewares/validateToken';
 import router from './routes/index';
 import { errorHandler } from './middlewares/errors';
 
@@ -21,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(validateToken);
 app.use('/', router);
 
 // catch 404 and forward to error handler
