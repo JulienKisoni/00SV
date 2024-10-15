@@ -98,3 +98,51 @@ export const deleteUser = async (req: ExtendedRequest<undefined>, res: Response,
   await userBusiness.deleteOne({ userId: value.userId });
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
+
+type EditUserPayload = Pick<IUserDocument, 'email' | 'username' | 'profile'>;
+interface JoiSchema {
+  params: {
+    userId: string;
+  };
+  body: EditUserPayload;
+}
+export const editUser = async (req: ExtendedRequest<EditUserPayload>, res: Response, next: NextFunction) => {
+  const userIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a user id',
+    'string.pattern.base': 'Please provide a valid user id',
+  };
+  const usernameMessages: LanguageMessages = {
+    'string.min': 'The field username must have 6 characters mininum',
+  };
+  const emailMessages: LanguageMessages = {
+    'string.email': 'Please enter a valid email',
+  };
+  const roleMessages: LanguageMessages = {
+    'any.only': 'Please enter a valid role',
+  };
+  const params = req.params as { userId: string };
+
+  const payload: JoiSchema = {
+    params,
+    body: req.body,
+  };
+  const schema = Joi.object<JoiSchema>({
+    params: {
+      userId: Joi.string().regex(regex.mongoId).required().messages(userIdMessages),
+    },
+    body: Joi.object({
+      username: Joi.string().min(6).messages(usernameMessages),
+      email: Joi.string().email().messages(emailMessages),
+      profile: {
+        role: Joi.string().valid(USER_ROLES.admin, USER_ROLES.user).messages(roleMessages),
+      },
+    }).required(),
+  });
+  const { error, value } = schema.validate(payload, { stripUnknown: true, abortEarly: true });
+  if (error) {
+    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
+    return next(err);
+  }
+  await userBusiness.updateOne({ payload: value.body, userId: value.params.userId });
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};

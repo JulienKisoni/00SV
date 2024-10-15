@@ -1,4 +1,5 @@
 import omit from 'lodash.omit';
+import isEmpty from 'lodash.isempty';
 import { verify } from 'jsonwebtoken';
 
 import { IUserDocument, USER_ROLES } from '../types/models';
@@ -6,6 +7,7 @@ import { IUserMethods, UserModel } from '../models/user';
 import { createError, GenericError } from '../middlewares/errors';
 import { encrypt } from '../utils/hash';
 import { HTTP_STATUS_CODES } from '../types/enums';
+import { UpdateQuery } from 'mongoose';
 
 interface AddUserPayload extends Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'> {
   role: USER_ROLES;
@@ -97,4 +99,28 @@ export const invalidateToken = async ({ userId }: { userId: string }): Promise<v
 
 export const deleteOne = async ({ userId }: { userId: string }) => {
   return UserModel.deleteOne({ _id: userId }).exec();
+};
+
+type EditUserPayload = Pick<IUserDocument, 'email' | 'username' | 'profile'>;
+interface EditUserParams {
+  payload: Partial<EditUserPayload>;
+  userId: string;
+}
+export const updateOne = async ({ payload: { email, profile, username }, userId }: EditUserParams) => {
+  const update: UpdateQuery<EditUserPayload> = {};
+  if (email) {
+    update['email'] = email;
+  }
+  if (username) {
+    update['username'] = username;
+  }
+  if (profile?.role) {
+    update['profile.role'] = profile.role;
+  }
+  if (update && !isEmpty(update)) {
+    const user = await UserModel.findById<IUserMethods>(userId).exec();
+    if (user && user.updateSelf) {
+      await user?.updateSelf(update);
+    }
+  }
 };
