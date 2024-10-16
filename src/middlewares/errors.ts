@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { HTTP_STATUS_CODES } from '../types/enums';
+import Joi from 'joi';
 
 interface ErrorArgs {
   statusCode?: number;
@@ -34,4 +35,9 @@ export const errorHandler = (error: GenericError, _req: Request, res: Response, 
 
 export const createError = ({ statusCode, message, publicMessage }: ErrorArgs): GenericError => {
   return new GenericError({ statusCode, message, publicMessage });
+};
+
+export const convertToGenericError = ({ error, statusCode }: { error: Joi.ValidationError; statusCode: number }): GenericError => {
+  const message = error.message;
+  return createError({ statusCode, message, publicMessage: message });
 };

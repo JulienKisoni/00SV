@@ -14,7 +14,7 @@ export interface IUserDocument {
   username: string;
   email: string;
   password: string;
-  storeId?: string | Schema.Types.ObjectId;
+  storeIds?: string | Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   profile: {
@@ -23,4 +23,15 @@ export interface IUserDocument {
   private?: {
     invalidToken: ExpToken;
   };
+}
+
+export interface IStoreDocument {
+  _id: string | Schema.Types.ObjectId;
+  name: string;
+  owner: string | Schema.Types.ObjectId;
+  products: (string | Schema.Types.ObjectId)[];
+  createdAt: Date;
+  updatedAt: Date;
+  description: string;
+  active: boolean;
 }

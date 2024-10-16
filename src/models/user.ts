@@ -34,9 +34,11 @@ const userSchema = new Schema<IUserDocument>(
       required: true,
       min: 6,
     },
-    storeId: {
-      type: Schema.Types.ObjectId,
-    },
+    storeIds: [
+      {
+        type: Schema.Types.ObjectId,
+      },
+    ],
     profile: {
       role: {
         type: String,

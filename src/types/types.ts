@@ -16,6 +16,13 @@ namespace API_TYPES {
     tokens?: Tokens;
   }
 
+  interface AddStore {
+    userId: string;
+    active: boolean;
+    name: string;
+    description: string;
+  }
+
   interface Body {
     login: LoginReq;
     refreshToken: {
@@ -25,6 +32,7 @@ namespace API_TYPES {
 
   interface Business {
     login: TokenResponse;
+    addStore: AddStore;
   }
 
   export interface DecodedToken {
