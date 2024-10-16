@@ -22,6 +22,9 @@ namespace API_TYPES {
     name: string;
     description: string;
   }
+  interface DeleteStore {
+    storeId: string;
+  }
 
   interface Body {
     login: LoginReq;
@@ -33,6 +36,7 @@ namespace API_TYPES {
   interface Business {
     login: TokenResponse;
     addStore: AddStore;
+    delteStore: DeleteStore;
   }
 
   export interface DecodedToken {

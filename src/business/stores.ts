@@ -35,3 +35,20 @@ export const getStores = async (): GetStoresResponse => {
   const transformed = stores.map((store) => omit(store, ['__v']));
   return { stores: transformed };
 };
+
+type DeleteStorePayload = API_TYPES.Routes['business']['delteStore'];
+interface DeleteStoreReturn {
+  error?: GenericError;
+}
+export const deleteStore = async ({ storeId }: DeleteStorePayload): Promise<DeleteStoreReturn> => {
+  const store = await StoreModel.findByIdAndDelete(storeId).exec();
+  if (!store?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `No store with associated id (${storeId})`,
+      publicMessage: 'Store does not exist',
+    });
+    return { error };
+  }
+  return { error: undefined };
+};

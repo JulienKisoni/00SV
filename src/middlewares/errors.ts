@@ -37,7 +37,7 @@ export const createError = ({ statusCode, message, publicMessage }: ErrorArgs): 
   return new GenericError({ statusCode, message, publicMessage });
 };
 
-export const convertToGenericError = ({ error, statusCode }: { error: Joi.ValidationError; statusCode: number }): GenericError => {
+export const convertToGenericError = ({ error }: { error: Joi.ValidationError }): GenericError => {
   const message = error.message;
-  return createError({ statusCode, message, publicMessage: message });
+  return createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message, publicMessage: message });
 };

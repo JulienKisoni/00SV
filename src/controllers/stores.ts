@@ -55,7 +55,7 @@ export const addStore = async (req: ExtendedRequest<AddStoreBody>, res: Response
   });
   const { error, value } = schema.validate(payload, { stripUnknown: true, abortEarly: true });
   if (error) {
-    const err = convertToGenericError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, error });
+    const err = convertToGenericError({ error });
     return next(err);
   }
   const { storeId, error: err } = await storeBusiness.addStore({ ...value.params, ...value.body });
@@ -73,4 +73,29 @@ export const getStores = async (req: ExtendedRequest<undefined>, res: Response, 
   }
   const { stores } = await storeBusiness.getStores();
   res.status(HTTP_STATUS_CODES.OK).json({ stores });
+};
+
+interface DeleteStoreSchema {
+  storeId: string;
+}
+export const deleteStore = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as DeleteStoreSchema;
+
+  const storeIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a storeId',
+    'string.pattern.base': 'Please provide a valid storeId',
+  };
+  const scheam = Joi.object<DeleteStoreSchema>({
+    storeId: Joi.string().regex(regex.mongoId).required().messages(storeIdMessages),
+  });
+  const { error, value } = scheam.validate(params);
+  if (error) {
+    const _error = convertToGenericError({ error });
+    return next(_error);
+  }
+  const { error: err } = await storeBusiness.deleteStore({ storeId: value.storeId });
+  if (err) {
+    return next(err);
+  }
+  res.status(HTTP_STATUS_CODES.OK).json({});
 };
