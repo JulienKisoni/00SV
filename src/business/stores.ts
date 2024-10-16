@@ -42,7 +42,8 @@ interface DeleteStoreReturn {
 }
 export const deleteStore = async ({ storeId }: DeleteStorePayload): Promise<DeleteStoreReturn> => {
   const store = await StoreModel.findByIdAndDelete(storeId).exec();
-  if (!store?._id) {
+  const user = await UserModel.findById<IUserMethods>(store?.owner).exec();
+  if (!store?._id || !user?._id || !user.updateSelf) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
       message: `No store with associated id (${storeId})`,
@@ -50,5 +51,6 @@ export const deleteStore = async ({ storeId }: DeleteStorePayload): Promise<Dele
     });
     return { error };
   }
+  await user.updateSelf({ $pull: { storeIds: store._id } });
   return { error: undefined };
 };
