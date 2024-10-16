@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import Joi, { LanguageMessages } from 'joi';
 
 import { regex } from '../helpers/constants';
-import { IStoreDocument } from '../types/models';
-import { convertToGenericError } from '../middlewares/errors';
+import { IStoreDocument, IUserDocument } from '../types/models';
+import { convertToGenericError, createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import * as storeBusiness from '../business/stores';
 
 interface ExtendedRequest<B> extends Request {
   body: B;
+  user?: IUserDocument;
 }
 
 type AddStoreBody = Pick<IStoreDocument, 'name' | 'description' | 'active'>;
@@ -62,4 +63,14 @@ export const addStore = async (req: ExtendedRequest<AddStoreBody>, res: Response
     return next(err);
   }
   res.status(HTTP_STATUS_CODES.CREATED).json({ storeId });
+};
+
+export const getStores = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const { user } = req;
+  if (!user) {
+    const err = createError({ statusCode: HTTP_STATUS_CODES.FORBIDEN, message: 'No user associated with the request found' });
+    return next(err);
+  }
+  const { stores } = await storeBusiness.getStores();
+  res.status(HTTP_STATUS_CODES.OK).json({ stores });
 };
