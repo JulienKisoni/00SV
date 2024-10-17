@@ -88,7 +88,6 @@ export const editStore = async ({ storeId, body }: EditStorePayload): Promise<Ed
     const [key, value] = entry;
     update[key] = value;
   });
-  console.log({ update });
 
   await store.updateSelf(update);
   return { error: undefined };

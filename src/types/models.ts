@@ -29,6 +29,7 @@ export interface IUserDocument extends Timestamps {
   private?: {
     invalidToken: ExpToken;
   };
+  __v: number;
 }
 
 export interface IStoreDocument extends Timestamps {
@@ -38,6 +39,7 @@ export interface IStoreDocument extends Timestamps {
   products: (string | Schema.Types.ObjectId)[];
   description: string;
   active: boolean;
+  __v: number;
 }
 
 export interface IProductDocument extends Timestamps {
@@ -50,6 +52,7 @@ export interface IProductDocument extends Timestamps {
   owner: string | Schema.Types.ObjectId;
   active: boolean;
   unitPrice: number;
+  __v: number;
 }
 
 export interface GeneralResponse<T> {
@@ -60,4 +63,7 @@ export interface ExtendedRequest<B> extends Request {
   body: B;
   user?: IUserDocument;
   isStoreOwner?: boolean;
+  isProductOwner?: boolean;
+  storeId?: string;
+  productId?: string;
 }

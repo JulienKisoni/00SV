@@ -72,7 +72,6 @@ const init = async () => {
     process.exit(1);
   }
   const connection_uri = `${DATABASE_URI}/${DATABASE_NAME}`;
-  console.log({ connection_uri });
   try {
     await connect(connection_uri);
     console.log('Connected to DB');

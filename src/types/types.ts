@@ -68,6 +68,9 @@ namespace API_TYPES {
         owner: string;
         storeId: string;
       };
+      getByStoreId: {
+        storeId: string;
+      };
     };
   }
 
@@ -80,8 +83,18 @@ namespace API_TYPES {
     jti: string;
   }
 
+  interface QueryParams {
+    products: {
+      deleteOne: {
+        storeId: string;
+        productId: string;
+      };
+    };
+  }
+
   export interface Routes {
     body: Body;
     business: Business;
+    params: QueryParams;
   }
 }
