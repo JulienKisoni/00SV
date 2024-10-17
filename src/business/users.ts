@@ -135,4 +135,20 @@ export const updateOne = async ({ payload, userId }: EditUserParams): Promise<{ 
   return { error: undefined };
 };
 
-// export const getOne;
+type GetOneUserPayload = API_TYPES.Routes['business']['users']['getOne'];
+interface GetOneUserResponse {
+  error?: GenericError;
+  user?: Omit<IUserDocument, 'password' | 'private'>;
+}
+export const getOne = async ({ userId }: GetOneUserPayload): Promise<GetOneUserResponse> => {
+  const user = await UserModel.findById(userId).lean().exec();
+  if (!user?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `User with id ${userId} does not exist `,
+      publicMessage: 'No user found',
+    });
+    return { error };
+  }
+  return { user: omit(user, ['password', 'private']) };
+};

@@ -3,7 +3,7 @@ import Joi, { type LanguageMessages } from 'joi';
 
 import { IUserDocument, USER_ROLES } from '../types/models';
 import * as userBusiness from '../business/users';
-import { createError } from '../middlewares/errors';
+import { convertToGenericError, createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { IUserMethods } from '../models/user';
 import { regex } from '../helpers/constants';
@@ -148,4 +148,27 @@ export const editUser = async (req: ExtendedRequest<EditUserPayload>, res: Respo
     return next(err);
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
+};
+
+type GetOneUserPayload = API_TYPES.Routes['business']['users']['getOne'];
+export const getOneUser = async (req: ExtendedRequest<EditUserPayload>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as GetOneUserPayload;
+  const userIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a user id',
+    'string.pattern.base': 'Please provide a valid user id',
+  };
+  const schema = Joi.object<GetOneUserPayload>({
+    userId: Joi.string().regex(regex.mongoId).required().messages(userIdMessages),
+  });
+
+  const { error, value } = schema.validate(params, { stripUnknown: true, abortEarly: true });
+  if (error) {
+    const err = convertToGenericError({ error });
+    return next(err);
+  }
+  const { error: _error, user } = await userBusiness.getOne({ userId: value.userId });
+  if (_error) {
+    return next(_error);
+  }
+  res.status(HTTP_STATUS_CODES.OK).json({ user });
 };
