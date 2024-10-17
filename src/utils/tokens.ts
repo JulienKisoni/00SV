@@ -14,7 +14,7 @@ export const generateToken = async ({
   email: string;
   userId: string;
   type: TokenType;
-}): Promise<API_TYPES.Routes['business']['login']> => {
+}): Promise<API_TYPES.Routes['business']['auth']['login']> => {
   let accessToken: string | undefined;
   let refreshToken: string | undefined;
   const error = createError({

@@ -31,17 +31,26 @@ namespace API_TYPES {
     refreshToken: {
       refreshToken: string;
     };
-    editStore: {
-      active?: boolean;
-      name?: string;
-      description?: string;
-    };
   }
 
   interface Business {
-    login: TokenResponse;
-    addStore: AddStore;
-    delteStore: DeleteStore;
+    auth: {
+      login: TokenResponse;
+    };
+    stores: {
+      editStore: {
+        active?: boolean;
+        name?: string;
+        description?: string;
+      };
+      addStore: AddStore;
+      deleteStore: DeleteStore;
+    };
+    users: {
+      getOne: {
+        userId: string;
+      };
+    };
   }
 
   export interface DecodedToken {

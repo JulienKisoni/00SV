@@ -101,7 +101,7 @@ export const deleteStore = async (req: ExtendedRequest<undefined>, res: Response
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
 
-type EditStoreBody = API_TYPES.Routes['body']['editStore'];
+type EditStoreBody = API_TYPES.Routes['business']['stores']['editStore'];
 type EditStoreParams = {
   storeId: string;
 };

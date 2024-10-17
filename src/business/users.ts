@@ -134,3 +134,5 @@ export const updateOne = async ({ payload, userId }: EditUserParams): Promise<{ 
   }
   return { error: undefined };
 };
+
+// export const getOne;

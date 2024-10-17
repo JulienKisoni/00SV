@@ -5,7 +5,7 @@ import { createError } from './errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { StoreModel } from '../models/store';
 
-type EditStoreBody = API_TYPES.Routes['body']['editStore'];
+type EditStoreBody = API_TYPES.Routes['business']['stores']['editStore'];
 interface ExtendedRequest<B> extends Request {
   body: B;
   user?: IUserDocument;

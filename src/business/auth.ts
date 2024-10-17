@@ -4,7 +4,7 @@ import { UserModel } from '../models/user';
 import { generateToken } from '../utils/tokens';
 
 type LoginPaylod = API_TYPES.Routes['body']['login'];
-type LoginResponse = API_TYPES.Routes['business']['login'];
+type LoginResponse = API_TYPES.Routes['business']['auth']['login'];
 
 export const login = async ({ email, password }: LoginPaylod): Promise<LoginResponse> => {
   const user = await UserModel.findByEmail(email);

@@ -8,7 +8,7 @@ import { HTTP_STATUS_CODES } from '../types/enums';
 import { IStoreDocument } from 'src/types/models';
 import { UpdateQuery } from 'mongoose';
 
-type AddStorePayload = API_TYPES.Routes['business']['addStore'];
+type AddStorePayload = API_TYPES.Routes['business']['stores']['addStore'];
 type AddStoreResponse = Promise<{ storeId?: string; error?: GenericError }>;
 export const addStore = async ({ userId, name, description, active }: AddStorePayload): AddStoreResponse => {
   const user = await UserModel.findById<IUserMethods>(userId).exec();
@@ -38,7 +38,7 @@ export const getStores = async (): GetStoresResponse => {
   return { stores: transformed };
 };
 
-type DeleteStorePayload = API_TYPES.Routes['business']['delteStore'];
+type DeleteStorePayload = API_TYPES.Routes['business']['stores']['deleteStore'];
 interface DeleteStoreReturn {
   error?: GenericError;
 }
@@ -57,7 +57,7 @@ export const deleteStore = async ({ storeId }: DeleteStorePayload): Promise<Dele
   return { error: undefined };
 };
 
-type EditStoreBody = API_TYPES.Routes['body']['editStore'];
+type EditStoreBody = API_TYPES.Routes['business']['stores']['editStore'];
 interface EditStorePayload {
   storeId: string;
   body: EditStoreBody;
