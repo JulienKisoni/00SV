@@ -6,6 +6,7 @@ import { createError, handleError } from './errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { StoreModel } from '../models/store';
 import { regex } from '../helpers/constants';
+import { ProductModel } from '../models/product';
 
 type EditStoreBody = API_TYPES.Routes['business']['stores']['editStore'];
 
@@ -37,38 +38,55 @@ export const isStoreOwner = async (req: ExtendedRequest<EditStoreBody>, _res: Re
   next();
 };
 
+interface IGetStoreParams {
+  storeId?: string;
+  productId?: string;
+}
 export const getStore = async (req: ExtendedRequest<undefined>, _res: Response, next: NextFunction) => {
-  const params = req.params as unknown as EditStoreParams;
+  const params = req.params as unknown as IGetStoreParams;
   const storeIdMessages: LanguageMessages = {
-    'any.required': 'Please provide a storeId',
     'string.pattern.base': 'Please provide a valid storeId',
   };
-  const schema = Joi.object<EditStoreParams>({
-    storeId: Joi.string().regex(regex.mongoId).required().messages(storeIdMessages),
+  const productIdMessages: LanguageMessages = {
+    'string.pattern.base': 'Please provide a valid storeId',
+  };
+  const schema = Joi.object<IGetStoreParams>({
+    storeId: Joi.string().regex(regex.mongoId).messages(storeIdMessages),
+    productId: Joi.string().regex(regex.mongoId).messages(productIdMessages),
   });
 
   const { error, value } = schema.validate(params, { stripUnknown: true });
   if (error) {
     return handleError({ next, error });
   }
-  const { storeId } = value;
-  if (!storeId) {
-    const error = createError({
-      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
-      message: `No storeId`,
-      publicMessage: 'Ressource not found',
-    });
-    return next(error);
+  const { storeId, productId } = value;
+  console.log({ productId, storeId });
+  if (storeId) {
+    const store = await StoreModel.findOne({ _id: storeId }).exec();
+    if (!store?._id) {
+      const error = createError({
+        statusCode: HTTP_STATUS_CODES.FORBIDEN,
+        message: `No associated store (${storeId}) found`,
+        publicMessage: 'Please make sure the store exist',
+      });
+      return next(error);
+    }
+    req.storeId = storeId;
+    return next();
+  } else if (productId) {
+    const product = await ProductModel.findById(productId).exec();
+    if (!product?._id) {
+      const error = createError({
+        statusCode: HTTP_STATUS_CODES.FORBIDEN,
+        message: `No associated product (${productId}) found`,
+        publicMessage: 'Please make sure the product exist',
+      });
+      return next(error);
+    }
+    req.storeId = product.storeId.toString();
+    req.productId = productId;
+    return next();
+  } else {
+    return next();
   }
-  const store = await StoreModel.findOne({ _id: storeId }).exec();
-  if (!store?._id) {
-    const error = createError({
-      statusCode: HTTP_STATUS_CODES.FORBIDEN,
-      message: `No associated store (${storeId}) found`,
-      publicMessage: 'Please make sure the store exist',
-    });
-    return next(error);
-  }
-  req.storeId = storeId;
-  next();
 };

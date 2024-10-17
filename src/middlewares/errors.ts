@@ -15,14 +15,14 @@ export class GenericError extends Error {
   constructor({ statusCode, message, publicMessage }: ErrorArgs) {
     super();
     this.statusCode = statusCode || HTTP_STATUS_CODES.STH_WENT_WRONG;
-    this.message = message;
+    this.message = this.stack || message;
     this.publicMessage = publicMessage || 'Something went wrong';
   }
 }
 
 export const errorHandler = (error: GenericError, _req: Request, res: Response, _next: NextFunction) => {
-  const { statusCode = HTTP_STATUS_CODES.STH_WENT_WRONG, message, publicMessage = 'Something went wrong' } = error;
-  console.error('**** Error Caught here ****** ', message);
+  const { statusCode = HTTP_STATUS_CODES.STH_WENT_WRONG, message, publicMessage = 'Something went wrong', stack } = error;
+  console.error('**** Error Caught here ****** ', stack || message);
   res.status(statusCode).json({
     errors: [
       {
@@ -39,7 +39,7 @@ export const createError = ({ statusCode, message, publicMessage }: ErrorArgs): 
 
 export const convertToGenericError = ({ error }: { error: Joi.ValidationError }): GenericError => {
   const message = error.message;
-  return createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message, publicMessage: message });
+  return createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.stack || message, publicMessage: message });
 };
 
 interface HandleErrorArgs {
@@ -55,7 +55,7 @@ export const handleError = ({ error, statusCode, publicMessage, next }: HandleEr
   } else if (error instanceof GenericError) {
     _error = error;
   } else if (error instanceof Error) {
-    _error = createError({ statusCode, message: error.message, publicMessage });
+    _error = createError({ statusCode, message: error.stack || error.message, publicMessage });
   } else {
     _error = new GenericError({
       statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG,

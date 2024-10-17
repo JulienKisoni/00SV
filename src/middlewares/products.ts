@@ -29,7 +29,12 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
     },
   });
 
-  const { error, value } = schema.validate({ params }, { stripUnknown: true });
+  const payload = {
+    ...params,
+    storeId: params.storeId || req.storeId,
+  };
+
+  const { error, value } = schema.validate({ params: payload }, { stripUnknown: true });
   if (error) {
     return handleError({ error, next });
   }

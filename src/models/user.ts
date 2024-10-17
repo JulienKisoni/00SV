@@ -83,7 +83,11 @@ const userSchema = new Schema<IUserDocument>(
             const error = createError({ statusCode: HTTP_STATUS_CODES.UNAUTHORIZED, message: 'Token expired', publicMessage: 'Please re-login' });
             return { error };
           }
-          const err = createError({ statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG, message: error.message, publicMessage: 'Something went wrong' });
+          const err = createError({
+            statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG,
+            message: error.stack || error.message,
+            publicMessage: 'Something went wrong',
+          });
           return { error: err };
         }
       },

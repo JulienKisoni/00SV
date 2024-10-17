@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 
-import { createError } from '../middlewares/errors';
+import { handleError } from '../middlewares/errors';
 import * as authBusiness from '../business/auth';
 import * as userBusiness from '../business/users';
 import { HTTP_STATUS_CODES } from '../types/enums';
@@ -31,8 +31,7 @@ export const login = async (req: ExtendedRequest<LoginBody>, res: Response, next
   const { error, value } = schema.validate({ email, password }, { stripUnknown: true, abortEarly: true });
 
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, publicMessage: error.message, message: error.message });
-    return next(err);
+    return handleError({ error, next });
   } else if (value) {
     const { error, tokens } = await authBusiness.login(value);
     if (error) {
@@ -55,8 +54,7 @@ export const refreshToken = async (req: ExtendedRequest<RefreshTokenBody>, res: 
   });
   const { error, value } = schema.validate(req.body, { stripUnknown: true, abortEarly: true });
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
-    return next(err);
+    return handleError({ error, next });
   }
   const { error: err, accessToken } = await authBusiness.refreshToken({ refreshToken: value.refreshToken });
   if (err) {

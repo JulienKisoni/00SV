@@ -3,7 +3,7 @@ import Joi, { type LanguageMessages } from 'joi';
 
 import { IUserDocument, USER_ROLES } from '../types/models';
 import * as userBusiness from '../business/users';
-import { convertToGenericError, createError } from '../middlewares/errors';
+import { convertToGenericError, createError, handleError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { IUserMethods } from '../models/user';
 import { regex } from '../helpers/constants';
@@ -44,8 +44,7 @@ export const addUserCtrl = async (req: ExtendedRequest<AddUserPayload>, res: Res
   });
   const { error, value } = schema.validate({ email, password, username, role });
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
-    return next(err);
+    return handleError({ error, next });
   } else if (value) {
     const { error, userId } = await userBusiness.addUser(value);
     if (error && !userId) {
@@ -75,8 +74,7 @@ export const invalidateToken = async (req: ExtendedRequest<{ userId: string }>, 
   });
   const { error, value } = schema.validate(req.body, { stripUnknown: true });
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.FORBIDEN, message: error.message, publicMessage: error.message });
-    return next(err);
+    return handleError({ error, next });
   }
   await userBusiness.invalidateToken({ userId: value.userId });
   res.status(HTTP_STATUS_CODES.OK).json({});
@@ -92,8 +90,7 @@ export const deleteUser = async (req: ExtendedRequest<undefined>, res: Response,
   });
   const { error, value } = schema.validate(req.params, { stripUnknown: true });
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
-    return next(err);
+    return handleError({ error, next });
   }
   await userBusiness.deleteOne({ userId: value.userId });
   res.status(HTTP_STATUS_CODES.OK).json({});
@@ -140,8 +137,7 @@ export const editUser = async (req: ExtendedRequest<EditUserPayload>, res: Respo
   });
   const { error, value } = schema.validate(payload, { stripUnknown: true, abortEarly: true });
   if (error) {
-    const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
-    return next(err);
+    return handleError({ error, next });
   }
   const { error: err } = await userBusiness.updateOne({ payload: value.body, userId: value.params.userId });
   if (err) {
