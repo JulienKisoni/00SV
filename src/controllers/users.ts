@@ -151,7 +151,7 @@ export const editUser = async (req: ExtendedRequest<EditUserPayload>, res: Respo
 };
 
 type GetOneUserPayload = API_TYPES.Routes['business']['users']['getOne'];
-export const getOneUser = async (req: ExtendedRequest<EditUserPayload>, res: Response, next: NextFunction) => {
+export const getOneUser = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const params = req.params as unknown as GetOneUserPayload;
   const userIdMessages: LanguageMessages = {
     'any.required': 'Please provide a user id',

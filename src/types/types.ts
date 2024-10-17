@@ -45,6 +45,9 @@ namespace API_TYPES {
       };
       addStore: AddStore;
       deleteStore: DeleteStore;
+      getOne: {
+        storeId: string;
+      };
     };
     users: {
       getOne: {

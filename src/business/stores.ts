@@ -93,3 +93,21 @@ export const editStore = async ({ storeId, body }: EditStorePayload): Promise<Ed
   await store.updateSelf(update);
   return { error: undefined };
 };
+
+type GetOneStorePayload = API_TYPES.Routes['business']['stores']['getOne'];
+interface GetOneUserResponse {
+  error?: GenericError;
+  store?: IStoreDocument;
+}
+export const getOne = async ({ storeId }: GetOneStorePayload): Promise<GetOneUserResponse> => {
+  const store = await StoreModel.findById(storeId).lean().exec();
+  if (!store?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `User with id ${storeId} does not exist `,
+      publicMessage: 'No store found',
+    });
+    return { error };
+  }
+  return { store };
+};

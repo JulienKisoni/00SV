@@ -7,6 +7,7 @@ const storesRouter = express.Router();
 
 storesRouter.get('/', storeCtrl.getStores);
 storesRouter.post('/:userId/add', storeCtrl.addStore);
+storesRouter.get('/:storeId', storeCtrl.getOneStore);
 storesRouter.delete('/:storeId', storeCtrl.deleteStore);
 storesRouter.patch('/:storeId', storeMiddlewares.isStoreOwner, storeCtrl.editStore);
 

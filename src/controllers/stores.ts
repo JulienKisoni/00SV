@@ -147,3 +147,26 @@ export const editStore = async (req: ExtendedRequest<EditStoreBody>, res: Respon
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
+
+type GetOneStorePayload = API_TYPES.Routes['business']['stores']['getOne'];
+export const getOneStore = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as GetOneStorePayload;
+  const storeIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a store id',
+    'string.pattern.base': 'Please provide a valid store id',
+  };
+  const schema = Joi.object<GetOneStorePayload>({
+    storeId: Joi.string().regex(regex.mongoId).required().messages(storeIdMessages),
+  });
+
+  const { error, value } = schema.validate(params, { stripUnknown: true, abortEarly: true });
+  if (error) {
+    const err = convertToGenericError({ error });
+    return next(err);
+  }
+  const { error: _error, store } = await storeBusiness.getOne({ storeId: value.storeId });
+  if (_error) {
+    return next(_error);
+  }
+  res.status(HTTP_STATUS_CODES.OK).json({ store });
+};
