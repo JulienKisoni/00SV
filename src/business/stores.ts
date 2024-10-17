@@ -1,10 +1,12 @@
 import omit from 'lodash.omit';
+import isEmpty from 'lodash.isempty';
 
 import { IUserMethods, UserModel } from '../models/user';
-import { StoreModel } from '../models/store';
+import { IStoreMethods, StoreModel } from '../models/store';
 import { createError, GenericError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { IStoreDocument } from 'src/types/models';
+import { UpdateQuery } from 'mongoose';
 
 type AddStorePayload = API_TYPES.Routes['business']['addStore'];
 type AddStoreResponse = Promise<{ storeId?: string; error?: GenericError }>;
@@ -52,5 +54,42 @@ export const deleteStore = async ({ storeId }: DeleteStorePayload): Promise<Dele
     return { error };
   }
   await user.updateSelf({ $pull: { storeIds: store._id } });
+  return { error: undefined };
+};
+
+type EditStoreBody = API_TYPES.Routes['body']['editStore'];
+interface EditStorePayload {
+  storeId: string;
+  body: EditStoreBody;
+}
+
+type EditStoreResponse = { error?: GenericError };
+export const editStore = async ({ storeId, body }: EditStorePayload): Promise<EditStoreResponse> => {
+  const store = await StoreModel.findById<IStoreMethods>(storeId).exec();
+  if (!store?._id || !store?.updateSelf) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Store not found (${storeId})`,
+      publicMessage: 'Store does not exist',
+    });
+    return { error };
+  }
+  if (!body || isEmpty(body)) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: `No body associated with the request`,
+      publicMessage: 'Please provide valid fields to update',
+    });
+    return { error };
+  }
+  const update: UpdateQuery<IStoreDocument> = {};
+  const entries = Object.entries(body);
+  entries.forEach((entry) => {
+    const [key, value] = entry;
+    update[key] = value;
+  });
+  console.log({ update });
+
+  await store.updateSelf(update);
   return { error: undefined };
 };

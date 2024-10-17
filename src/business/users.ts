@@ -106,8 +106,17 @@ interface EditUserParams {
   payload: Partial<EditUserPayload>;
   userId: string;
 }
-export const updateOne = async ({ payload: { email, profile, username }, userId }: EditUserParams) => {
+export const updateOne = async ({ payload, userId }: EditUserParams): Promise<{ error?: GenericError }> => {
   const update: UpdateQuery<EditUserPayload> = {};
+  const { email, profile, username } = payload;
+  if (!payload || isEmpty(payload)) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: `No body associated with the request`,
+      publicMessage: 'Please provide valid fields to update',
+    });
+    return { error };
+  }
   if (email) {
     update['email'] = email;
   }
@@ -123,4 +132,5 @@ export const updateOne = async ({ payload: { email, profile, username }, userId 
       await user?.updateSelf(update);
     }
   }
+  return { error: undefined };
 };

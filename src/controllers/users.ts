@@ -130,19 +130,22 @@ export const editUser = async (req: ExtendedRequest<EditUserPayload>, res: Respo
     params: {
       userId: Joi.string().regex(regex.mongoId).required().messages(userIdMessages),
     },
-    body: Joi.object({
+    body: {
       username: Joi.string().min(6).messages(usernameMessages),
       email: Joi.string().email().messages(emailMessages),
       profile: {
         role: Joi.string().valid(USER_ROLES.admin, USER_ROLES.user).messages(roleMessages),
       },
-    }).required(),
+    },
   });
   const { error, value } = schema.validate(payload, { stripUnknown: true, abortEarly: true });
   if (error) {
     const err = createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message: error.message, publicMessage: error.message });
     return next(err);
   }
-  await userBusiness.updateOne({ payload: value.body, userId: value.params.userId });
+  const { error: err } = await userBusiness.updateOne({ payload: value.body, userId: value.params.userId });
+  if (err) {
+    return next(err);
+  }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };

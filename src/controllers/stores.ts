@@ -10,6 +10,7 @@ import * as storeBusiness from '../business/stores';
 interface ExtendedRequest<B> extends Request {
   body: B;
   user?: IUserDocument;
+  isStoreOwner?: boolean;
 }
 
 type AddStoreBody = Pick<IStoreDocument, 'name' | 'description' | 'active'>;
@@ -94,6 +95,53 @@ export const deleteStore = async (req: ExtendedRequest<undefined>, res: Response
     return next(_error);
   }
   const { error: err } = await storeBusiness.deleteStore({ storeId: value.storeId });
+  if (err) {
+    return next(err);
+  }
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};
+
+type EditStoreBody = API_TYPES.Routes['body']['editStore'];
+type EditStoreParams = {
+  storeId: string;
+};
+interface EditStoreSchema {
+  params: EditStoreParams;
+  body: EditStoreBody;
+}
+export const editStore = async (req: ExtendedRequest<EditStoreBody>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as EditStoreParams;
+  const storeIdMessages: LanguageMessages = {
+    'string.pattern.base': 'Please provide a valid store id',
+  };
+  const nameMessages: LanguageMessages = {
+    'string.min': 'The field name must have 6 characters mininum',
+  };
+  const descriptionMessages: LanguageMessages = {
+    'string.min': 'The field description must have 12 characters mininum',
+    'string.max': 'The field description must have 100 characters maximum',
+  };
+
+  const schema = Joi.object<EditStoreSchema>({
+    params: {
+      storeId: Joi.string().regex(regex.mongoId).required().messages(storeIdMessages),
+    },
+    body: {
+      name: Joi.string().min(6).messages(nameMessages),
+      description: Joi.string().min(6).max(100).messages(descriptionMessages),
+      active: Joi.bool(),
+    },
+  });
+  const payload = {
+    params,
+    body: req.body,
+  };
+  const { error, value } = schema.validate(payload, { abortEarly: true, stripUnknown: true });
+  if (error) {
+    const err = convertToGenericError({ error });
+    return next(err);
+  }
+  const { error: err } = await storeBusiness.editStore({ storeId: value.params.storeId, body: value.body });
   if (err) {
     return next(err);
   }

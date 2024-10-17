@@ -31,6 +31,11 @@ namespace API_TYPES {
     refreshToken: {
       refreshToken: string;
     };
+    editStore: {
+      active?: boolean;
+      name?: string;
+      description?: string;
+    };
   }
 
   interface Business {
