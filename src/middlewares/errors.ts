@@ -41,3 +41,27 @@ export const convertToGenericError = ({ error }: { error: Joi.ValidationError })
   const message = error.message;
   return createError({ statusCode: HTTP_STATUS_CODES.BAD_REQUEST, message, publicMessage: message });
 };
+
+interface HandleErrorArgs {
+  error: GenericError | Error | Joi.ValidationError;
+  publicMessage?: string;
+  statusCode?: number;
+  next: NextFunction;
+}
+export const handleError = ({ error, statusCode, publicMessage, next }: HandleErrorArgs) => {
+  let _error;
+  if (error instanceof Joi.ValidationError) {
+    _error = convertToGenericError({ error });
+  } else if (error instanceof GenericError) {
+    _error = error;
+  } else if (error instanceof Error) {
+    _error = createError({ statusCode, message: error.message, publicMessage });
+  } else {
+    _error = new GenericError({
+      statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG,
+      message: 'Something went wrong',
+      publicMessage: 'Something went wrong ',
+    });
+  }
+  return next(_error);
+};

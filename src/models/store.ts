@@ -18,7 +18,7 @@ const storeSchema = new Schema<IStoreDocument>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    products: [{ type: String }],
+    products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     description: {
       type: String,
       required: true,

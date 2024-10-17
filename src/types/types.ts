@@ -25,6 +25,14 @@ namespace API_TYPES {
   interface DeleteStore {
     storeId: string;
   }
+  interface AddProductBody {
+    name: string;
+    quantity: number;
+    description: string;
+    minQuantity: number;
+    active: boolean;
+    unitPrice: number;
+  }
 
   interface Body {
     login: LoginReq;
@@ -52,6 +60,13 @@ namespace API_TYPES {
     users: {
       getOne: {
         userId: string;
+      };
+    };
+    products: {
+      add: {
+        body: AddProductBody;
+        owner: string;
+        storeId: string;
       };
     };
   }
