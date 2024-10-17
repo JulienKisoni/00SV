@@ -71,3 +71,19 @@ export const deleteOne = async ({ productId, storeId }: DeleteOneProductPayload)
   await StoreModel.findByIdAndUpdate(storeId, { $pull: { products: productId } }).exec();
   return { error: undefined, data: undefined };
 };
+
+type GetOneProductPayload = API_TYPES.Routes['params']['products']['getOne'];
+type GetOneProductResponse = Promise<GeneralResponse<Partial<IProductDocument>>>;
+export const getOne = async ({ productId }: GetOneProductPayload): GetOneProductResponse => {
+  const result = await ProductModel.findOne({ _id: productId }).lean().exec();
+  if (!result) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `No product found (${productId})`,
+      publicMessage: 'Product does not exist',
+    });
+    return { error };
+  }
+  const product = transformProduct({ product: result, excludedFields: ['__v'] });
+  return { data: product };
+};

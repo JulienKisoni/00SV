@@ -89,6 +89,9 @@ namespace API_TYPES {
         storeId: string;
         productId: string;
       };
+      getOne: {
+        productId: string;
+      };
     };
   }
 

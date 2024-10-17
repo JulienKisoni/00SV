@@ -125,3 +125,33 @@ export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, 
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
+
+type GetOneProductParams = API_TYPES.Routes['params']['products']['getOne'];
+interface GetOneProductPayload {
+  params: GetOneProductParams;
+}
+export const getOne = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as GetOneProductParams;
+
+  const productIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a productId',
+    'string.pattern.base': 'Please provide a valid productId',
+  };
+  const schema = Joi.object<GetOneProductPayload>({
+    params: {
+      productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
+    },
+  });
+
+  const { error, value } = schema.validate({ params }, { stripUnknown: true });
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { data, error: _error } = await productBusiness.getOne({ productId: value.params.productId });
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};
