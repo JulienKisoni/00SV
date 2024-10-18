@@ -11,7 +11,7 @@ type AddProductBody = API_TYPES.Routes['business']['products']['add']['body'];
 type AddProductParams = Pick<API_TYPES.Routes['business']['products']['add'], 'storeId'>;
 interface AddProductSchema {
   params: AddProductParams;
-  body: AddProductBody;
+  body: AddProductBody | undefined;
 }
 export const addProduct = async (req: ExtendedRequest<AddProductBody>, res: Response, next: NextFunction) => {
   const params = req.params as unknown as AddProductParams;
@@ -154,4 +154,52 @@ export const getOne = async (req: ExtendedRequest<undefined>, res: Response, nex
   }
 
   res.status(HTTP_STATUS_CODES.OK).json(data);
+};
+
+type UpdateProductBody = Partial<API_TYPES.Routes['body']['products']['updateOne']>;
+type UpdateProductParams = { productId: string };
+interface UpdateProductSchema {
+  params: UpdateProductParams;
+  body: UpdateProductBody | undefined;
+}
+export const updateOne = async (req: ExtendedRequest<UpdateProductBody>, res: Response, next: NextFunction) => {
+  const productIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a productId',
+    'string.pattern.base': 'Please provide a valid productId',
+  };
+  const descriptionMessages: LanguageMessages = {
+    'string.min': 'The field description must have 12 characters mininum',
+    'string.max': 'The field description must have 100 characters maximum',
+  };
+
+  const schema = Joi.object<UpdateProductSchema>({
+    params: {
+      productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
+    },
+    body: {
+      name: Joi.string(),
+      quantity: Joi.number(),
+      description: Joi.string().min(12).max(100).messages(descriptionMessages),
+      minQuantity: Joi.number(),
+      active: Joi.bool(),
+      unitPrice: Joi.number(),
+    },
+  });
+
+  const payload: UpdateProductSchema = {
+    params: req.params as unknown as UpdateProductParams,
+    body: req.body,
+  };
+
+  const { error, value } = schema.validate(payload, { stripUnknown: true });
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { error: _error } = await productBusiness.updateOne({ productId: value.params.productId, body: value.body });
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json({});
 };

@@ -87,3 +87,30 @@ export const getOne = async ({ productId }: GetOneProductPayload): GetOneProduct
   const product = transformProduct({ product: result, excludedFields: ['__v'] });
   return { data: product };
 };
+
+type UpdateProductBody = API_TYPES.Routes['body']['products']['updateOne'];
+interface UpdateProductPayload {
+  productId: string;
+  body: Partial<UpdateProductBody>;
+}
+type UpdateProductResponse = Promise<GeneralResponse<undefined>>;
+export const updateOne = async ({ body, productId }: Partial<UpdateProductPayload>): UpdateProductResponse => {
+  if (!body || isEmpty(body)) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: 'No body associated with the request',
+      publicMessage: 'Please provide valid fields ',
+    });
+    return { error };
+  }
+  const product = await ProductModel.findByIdAndUpdate(productId, body).exec();
+  if (!product?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Product not found (${productId})`,
+      publicMessage: 'This product does not exist',
+    });
+    return { error };
+  }
+  return { data: undefined };
+};

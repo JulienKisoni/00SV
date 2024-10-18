@@ -39,6 +39,16 @@ namespace API_TYPES {
     refreshToken: {
       refreshToken: string;
     };
+    products: {
+      updateOne: {
+        name: string;
+        quantity: number;
+        description: string;
+        minQuantity: number;
+        active: boolean;
+        unitPrice: number;
+      };
+    };
   }
 
   interface Business {
@@ -64,7 +74,7 @@ namespace API_TYPES {
     };
     products: {
       add: {
-        body: AddProductBody;
+        body: AddProductBody | undefined;
         owner: string;
         storeId: string;
       };
@@ -90,6 +100,9 @@ namespace API_TYPES {
         productId: string;
       };
       getOne: {
+        productId: string;
+      };
+      updateOne: {
         productId: string;
       };
     };

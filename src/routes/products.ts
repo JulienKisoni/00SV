@@ -13,4 +13,7 @@ productsRouter.get('/:productId', productCtrl.getOne);
 /* [DELETE] */
 productsRouter.delete('/:productId', storeMiddlewares.getStore, productMiddlewares.isProductOwner, productCtrl.deleteOne);
 
+/* [PATCH] */
+productsRouter.patch('/:productId', storeMiddlewares.getStore, productMiddlewares.isProductOwner, productCtrl.updateOne);
+
 export { productsRouter };

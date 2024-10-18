@@ -60,7 +60,6 @@ export const getStore = async (req: ExtendedRequest<undefined>, _res: Response, 
     return handleError({ next, error });
   }
   const { storeId, productId } = value;
-  console.log({ productId, storeId });
   if (storeId) {
     const store = await StoreModel.findOne({ _id: storeId }).exec();
     if (!store?._id) {

@@ -15,7 +15,6 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
   const params = req.params as unknown as DeleteProductParams;
   const userId = req.user?._id;
   const storeIdMessages: LanguageMessages = {
-    'any.required': 'Please provide a storeId',
     'string.pattern.base': 'Please provide a valid storeId',
   };
   const productIdMessages: LanguageMessages = {
@@ -24,7 +23,7 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
   };
   const schema = Joi.object<DeleteProductSchema>({
     params: {
-      storeId: Joi.string().regex(regex.mongoId).required().messages(storeIdMessages),
+      storeId: Joi.string().regex(regex.mongoId).messages(storeIdMessages),
       productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
     },
   });

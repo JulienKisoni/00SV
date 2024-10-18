@@ -60,7 +60,7 @@ export interface GeneralResponse<T> {
   data?: T;
 }
 export interface ExtendedRequest<B> extends Request {
-  body: B;
+  body: B | undefined;
   user?: IUserDocument;
   isStoreOwner?: boolean;
   isProductOwner?: boolean;
