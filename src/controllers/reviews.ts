@@ -135,3 +135,54 @@ export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, 
 
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
+
+type UpdateOneReviewBody = API_TYPES.Routes['body']['reviews']['updateOne'];
+type UpdateOneReviewParams = API_TYPES.Routes['params']['reviews']['updateOne'];
+interface UpdateOneReviewPayload {
+  body?: UpdateOneReviewBody;
+  params: UpdateOneReviewParams;
+}
+export const updateOne = async (req: ExtendedRequest<UpdateOneReviewBody>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as UpdateOneReviewParams;
+
+  const reviewIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+  const contentMessages: LanguageMessages = {
+    'string.min': 'The field content must have 12 characters mininum',
+    'string.max': 'The field content must have 100 characters maximum',
+  };
+  const starsMessages: LanguageMessages = {
+    'number.min': 'The stars field value cannot be bellow 0',
+    'number.max': 'The stars field value cannot be above 5',
+  };
+
+  const schema = Joi.object<UpdateOneReviewPayload>({
+    params: {
+      reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+    },
+    body: {
+      title: Joi.string(),
+      content: Joi.string().max(100).min(12).messages(contentMessages),
+      stars: Joi.number().max(5).min(0).messages(starsMessages),
+    },
+  });
+
+  const payload: UpdateOneReviewPayload = {
+    params,
+    body: req.body,
+  };
+
+  const { error, value } = schema.validate(payload, { stripUnknown: true });
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { error: _error } = await reviewBusiness.updateOne({ reviewId: value.params.reviewId, body: value.body });
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};

@@ -98,3 +98,35 @@ export const deleteOne = async (body: DeleteOneReviewBody): DeleteOneReviewRespo
 
   return { error: undefined };
 };
+
+type UpdateOneReviewBody = API_TYPES.Routes['body']['reviews']['updateOne'];
+interface UpdateOneReviewPayload {
+  body?: UpdateOneReviewBody;
+  reviewId: string;
+}
+type UpdateOneReviewResponse = Promise<GeneralResponse<undefined>>;
+export const updateOne = async ({ reviewId, body }: UpdateOneReviewPayload): UpdateOneReviewResponse => {
+  if (!body || isEmpty(body)) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: 'No associated body with the request',
+      publicMessage: 'Please provide valid fields to update',
+    });
+    return { error };
+  }
+
+  const review = await ReviewModel.findByIdAndUpdate(reviewId, body).exec();
+
+  if (!review?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `This review (${reviewId}) does not exist`,
+      publicMessage: 'Could not found this review',
+    });
+    return { error };
+  }
+
+  return { error: undefined, data: undefined };
+};
+
+export const getProductReviews = async () => {};

@@ -16,4 +16,7 @@ reviewRouter.delete('/:reviewId', productMiddlewares.getProduct, reviewCtrl.dele
 /* [POST] */
 reviewRouter.post('/', productMiddlewares.isNotProductOwner, reviewMiddlewares.notAlreadyReviewed, reviewCtrl.addReview);
 
+/* [POST] */
+reviewRouter.patch('/:reviewId', reviewMiddlewares.isReviewOwner, reviewCtrl.updateOne);
+
 export { reviewRouter };

@@ -57,3 +57,39 @@ export const notAlreadyReviewed = async (req: ExtendedRequest<AddReviewBody>, _r
   req.hasAlreadyRevieweProduct = false;
   return next();
 };
+
+type UpdateOneReviewBody = API_TYPES.Routes['body']['reviews']['updateOne'];
+type UpdateOneReviewParams = API_TYPES.Routes['params']['reviews']['updateOne'];
+export const isReviewOwner = async (req: ExtendedRequest<UpdateOneReviewBody>, _res: Response, next: NextFunction) => {
+  const params = req.params as unknown as UpdateOneReviewParams;
+
+  const reviewIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+
+  const schema = Joi.object<UpdateOneReviewParams>({
+    reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+  });
+
+  const { error, value } = schema.validate(params, { stripUnknown: true });
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const userId = req.user?._id.toString();
+
+  const review = await ReviewModel.findOne({ _id: value.reviewId, owner: userId }).exec();
+
+  if (!review?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.FORBIDEN,
+      message: `User (${userId}) is not the owner of the review (${value.reviewId})`,
+      publicMessage: 'Only the owner of a review is allowed to update it',
+    });
+    req.isReviewOwner = false;
+    return handleError({ error, next });
+  }
+  req.isReviewOwner = true;
+  return next();
+};

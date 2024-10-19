@@ -65,6 +65,7 @@ export interface ExtendedRequest<B> extends Request {
   user?: IUserDocument;
   isStoreOwner?: boolean;
   isProductOwner?: boolean;
+  isReviewOwner?: boolean;
   hasAlreadyRevieweProduct?: boolean;
   storeId?: string;
   productId?: string;

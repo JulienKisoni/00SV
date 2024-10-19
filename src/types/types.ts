@@ -61,6 +61,11 @@ namespace API_TYPES {
         reviewId: string;
         productId?: string;
       };
+      updateOne: {
+        title?: string;
+        content?: string;
+        stars?: number;
+      };
     };
   }
 
@@ -124,6 +129,9 @@ namespace API_TYPES {
         reviewId: string;
       };
       deleteOne: {
+        reviewId: string;
+      };
+      updateOne: {
         reviewId: string;
       };
     };
