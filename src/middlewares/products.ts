@@ -2,10 +2,11 @@ import { NextFunction, Response } from 'express';
 import Joi, { LanguageMessages } from 'joi';
 
 import { HTTP_STATUS_CODES } from '../types/enums';
-import { ExtendedRequest } from '../types/models';
+import { ExtendedRequest, IProductDocument } from '../types/models';
 import { createError, handleError } from './errors';
 import { regex } from '../helpers/constants';
 import { ProductModel } from '../models/product';
+import { RootFilterQuery } from 'mongoose';
 
 type DeleteProductParams = API_TYPES.Routes['params']['products']['deleteOne'];
 interface DeleteProductSchema {
@@ -112,17 +113,23 @@ export const isNotProductOwner = async (req: ExtendedRequest<AddReviewBody>, _re
   return next();
 };
 
-type DeleteOneReviewParams = API_TYPES.Routes['params']['reviews']['deleteOne'];
+interface IGetProdMiddleware {
+  reviewId?: string;
+  productId?: string;
+}
 export const getProduct = async (req: ExtendedRequest<undefined>, _res: Response, next: NextFunction) => {
-  const params = req.params as unknown as DeleteOneReviewParams;
+  const params = req.params as unknown as IGetProdMiddleware;
 
   const reviewIdMessages: LanguageMessages = {
-    'any.required': 'Please provide the review id',
     'string.pattern.base': 'Please provide a valid review id',
   };
+  const productIdMessages: LanguageMessages = {
+    'string.pattern.base': 'Please provide a valid product id',
+  };
 
-  const schema = Joi.object<DeleteOneReviewParams>({
-    reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+  const schema = Joi.object<IGetProdMiddleware>({
+    reviewId: Joi.string().regex(regex.mongoId).messages(reviewIdMessages),
+    productId: Joi.string().regex(regex.mongoId).messages(productIdMessages),
   });
 
   const { error, value } = schema.validate(params);
@@ -130,12 +137,24 @@ export const getProduct = async (req: ExtendedRequest<undefined>, _res: Response
     return handleError({ error, next });
   }
 
-  const product = await ProductModel.findOne({ reviews: value.reviewId }).exec();
+  const { productId, reviewId } = value;
+  let query: RootFilterQuery<IProductDocument>;
+  if (reviewId || !productId) {
+    query = {
+      reviews: value.reviewId,
+    };
+  } else {
+    query = {
+      _id: productId,
+    };
+  }
+  const product = await ProductModel.findOne(query).exec();
+
   if (!product?._id) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
       message: `Could not find product associated to this review (${value.reviewId})`,
-      publicMessage: 'It seems that this review is not linked to any product',
+      publicMessage: 'Could not find any product associated with your request',
     });
     req.productId = undefined;
     return handleError({ error, next });

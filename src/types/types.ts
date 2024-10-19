@@ -123,6 +123,9 @@ namespace API_TYPES {
       updateOne: {
         productId: string;
       };
+      getReviews: {
+        productId: string;
+      };
     };
     reviews: {
       getOne: {

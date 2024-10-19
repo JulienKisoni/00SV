@@ -186,3 +186,26 @@ export const updateOne = async (req: ExtendedRequest<UpdateOneReviewBody>, res: 
 
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
+
+type GetProductReviewsParams = API_TYPES.Routes['params']['products']['getReviews'];
+export const getProductReviews = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const productIdMessages: LanguageMessages = {
+    'any.required': 'Please provide a review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+
+  const params = req.params as unknown as GetProductReviewsParams;
+
+  const schema = Joi.object<GetProductReviewsParams>({
+    productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
+  });
+
+  const { error, value } = schema.validate(params);
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { data } = await reviewBusiness.getProductReviews(value);
+
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};

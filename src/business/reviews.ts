@@ -129,4 +129,11 @@ export const updateOne = async ({ reviewId, body }: UpdateOneReviewPayload): Upd
   return { error: undefined, data: undefined };
 };
 
-export const getProductReviews = async () => {};
+type GetProductReviewsParams = API_TYPES.Routes['params']['products']['getReviews'];
+type GetProductReviewsResponse = Promise<GeneralResponse<{ reviews: Partial<IReviewDocument>[] }>>;
+export const getProductReviews = async (params: GetProductReviewsParams): GetProductReviewsResponse => {
+  const { productId } = params;
+  const results = await ReviewModel.find({ productId }).lean().exec();
+  const reviews = results.map((review) => transformReview({ review, excludedFields: ['__v'] }));
+  return { error: undefined, data: { reviews } };
+};
