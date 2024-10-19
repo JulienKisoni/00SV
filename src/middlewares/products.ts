@@ -111,3 +111,36 @@ export const isNotProductOwner = async (req: ExtendedRequest<AddReviewBody>, _re
   req.isProductOwner = false;
   return next();
 };
+
+type DeleteOneReviewParams = API_TYPES.Routes['params']['reviews']['deleteOne'];
+export const getProduct = async (req: ExtendedRequest<undefined>, _res: Response, next: NextFunction) => {
+  const params = req.params as unknown as DeleteOneReviewParams;
+
+  const reviewIdMessages: LanguageMessages = {
+    'any.required': 'Please provide the review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+
+  const schema = Joi.object<DeleteOneReviewParams>({
+    reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+  });
+
+  const { error, value } = schema.validate(params);
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const product = await ProductModel.findOne({ reviews: value.reviewId }).exec();
+  if (!product?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find product associated to this review (${value.reviewId})`,
+      publicMessage: 'It seems that this review is not linked to any product',
+    });
+    req.productId = undefined;
+    return handleError({ error, next });
+  }
+
+  req.productId = product._id.toString();
+  return next();
+};

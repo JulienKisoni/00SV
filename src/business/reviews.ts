@@ -70,3 +70,31 @@ export const getOneReview = async (params: GetOneReviewParams): GetOneReviewResp
   const transformed = transformReview({ review, excludedFields: ['__v'] });
   return { data: { review: transformed } };
 };
+
+type DeleteOneReviewBody = API_TYPES.Routes['body']['reviews']['deleteOne'];
+type DeleteOneReviewResponse = Promise<GeneralResponse<undefined>>;
+export const deleteOne = async (body: DeleteOneReviewBody): DeleteOneReviewResponse => {
+  const { reviewId, productId } = body;
+  const product = await ProductModel.findById<IProductMethods>(productId).exec();
+  if (!product?._id || !product.removeReview) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find product (${reviewId})`,
+      publicMessage: 'Could not find the product associated with this review',
+    });
+    return { error };
+  }
+  const review = await ReviewModel.findByIdAndDelete(reviewId).exec();
+  if (!review?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find review (${reviewId})`,
+      publicMessage: 'This review does not exist',
+    });
+    return { error };
+  }
+
+  await product.removeReview(reviewId);
+
+  return { error: undefined };
+};

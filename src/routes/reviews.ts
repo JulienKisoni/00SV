@@ -10,6 +10,9 @@ const reviewRouter = Router();
 reviewRouter.get('/', reviewCtrl.getAllReviews);
 reviewRouter.get('/:reviewId', reviewCtrl.getOneReview);
 
+/* [DELETE] */
+reviewRouter.delete('/:reviewId', productMiddlewares.getProduct, reviewCtrl.deleteOne);
+
 /* [POST] */
 reviewRouter.post('/', productMiddlewares.isNotProductOwner, reviewMiddlewares.notAlreadyReviewed, reviewCtrl.addReview);
 

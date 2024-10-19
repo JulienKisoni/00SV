@@ -3,6 +3,7 @@ import { IProductDocument } from 'src/types/models';
 
 export interface IProductMethods extends IProductDocument {
   addReview?: (reviewId: string) => Promise<IProductDocument | null>;
+  removeReview?: (reviewId: string) => Promise<IProductDocument | null>;
 }
 
 export interface IProductStatics extends Model<IProductDocument> {}
@@ -51,6 +52,9 @@ const productSchema = new Schema<IProductDocument>(
     methods: {
       async addReview(reviewId: string): Promise<IProductMethods | null> {
         return ProductModel.findByIdAndUpdate(this._id, { $push: { reviews: reviewId } }).exec();
+      },
+      async removeReview(reviewId: string): Promise<IProductMethods | null> {
+        return ProductModel.findByIdAndUpdate(this._id, { $pull: { reviews: reviewId } }).exec();
       },
     },
   },

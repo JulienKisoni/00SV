@@ -57,6 +57,10 @@ namespace API_TYPES {
         stars?: number;
         owner?: string;
       };
+      deleteOne: {
+        reviewId: string;
+        productId?: string;
+      };
     };
   }
 
@@ -117,6 +121,9 @@ namespace API_TYPES {
     };
     reviews: {
       getOne: {
+        reviewId: string;
+      };
+      deleteOne: {
         reviewId: string;
       };
     };

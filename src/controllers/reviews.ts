@@ -91,3 +91,47 @@ export const getOneReview = async (req: ExtendedRequest<undefined>, res: Respons
 
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
+
+type DeleteOneReviewParams = API_TYPES.Routes['params']['reviews']['deleteOne'];
+type DeleteOneReviewBody = API_TYPES.Routes['body']['reviews']['deleteOne'];
+interface DeleteOneReviewPayload {
+  body: DeleteOneReviewBody;
+}
+export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as DeleteOneReviewParams;
+
+  const reviewIdMessages: LanguageMessages = {
+    'any.required': 'Please provide the review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+  const productIdMessages: LanguageMessages = {
+    'any.required': 'Could not find associated product id',
+    'string.pattern.base': 'Associated product id seems not to be valid',
+  };
+
+  const schema = Joi.object<DeleteOneReviewPayload>({
+    body: {
+      reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+      productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
+    },
+  });
+
+  const payload: DeleteOneReviewPayload = {
+    body: {
+      productId: req.productId,
+      ...params,
+    },
+  };
+
+  const { error, value } = schema.validate(payload);
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { error: _error } = await reviewBusiness.deleteOne(value.body);
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};
