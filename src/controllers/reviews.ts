@@ -56,3 +56,12 @@ export const addReview = async (req: ExtendedRequest<AddReviewBody>, res: Respon
 
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
+
+export const getAllReviews = async (_req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const { error, data } = await reviewBusiness.getAllReviews();
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};
