@@ -52,6 +52,7 @@ export interface IProductDocument extends Timestamps {
   owner: string | Schema.Types.ObjectId;
   active: boolean;
   unitPrice: number;
+  reviews: (string | Schema.Types.ObjectId)[];
   __v: number;
 }
 
@@ -64,6 +65,17 @@ export interface ExtendedRequest<B> extends Request {
   user?: IUserDocument;
   isStoreOwner?: boolean;
   isProductOwner?: boolean;
+  hasAlreadyRevieweProduct?: boolean;
   storeId?: string;
   productId?: string;
+}
+
+export interface IReviewDocument extends Timestamps {
+  _id: string | Schema.Types.ObjectId;
+  title: string;
+  content: string;
+  stars: number;
+  productId: string | Schema.Types.ObjectId;
+  owner: string | Schema.Types.ObjectId;
+  __v: number;
 }

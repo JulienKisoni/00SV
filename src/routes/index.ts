@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { usersRouter } from './users';
 import { storesRouter } from './stores';
 import { productsRouter } from './products';
-import { cartItemsRouter } from './cartItems';
+import { reviewRouter } from './reviews';
 import { orderRouters } from './orders';
 import { authRouter } from './auth';
 import { HTTP_STATUS_CODES } from '../types/enums';
@@ -20,7 +20,7 @@ router.get('/', getController);
 router.use('/users', usersRouter);
 router.use('/stores', storesRouter);
 router.use('/products', productsRouter);
-router.use('/cartItems', cartItemsRouter);
+router.use('/reviews', reviewRouter);
 router.use('/orders', orderRouters);
 router.use('/auth', authRouter);
 

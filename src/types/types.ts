@@ -49,6 +49,15 @@ namespace API_TYPES {
         unitPrice: number;
       };
     };
+    reviews: {
+      add: {
+        productId?: string;
+        title?: string;
+        content?: string;
+        stars?: number;
+        owner?: string;
+      };
+    };
   }
 
   interface Business {

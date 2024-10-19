@@ -1,7 +1,9 @@
 import { model, Model, Schema } from 'mongoose';
 import { IProductDocument } from 'src/types/models';
 
-export interface IProductMethods extends IProductDocument {}
+export interface IProductMethods extends IProductDocument {
+  addReview?: (reviewId: string) => Promise<IProductDocument | null>;
+}
 
 export interface IProductStatics extends Model<IProductDocument> {}
 
@@ -42,9 +44,15 @@ const productSchema = new Schema<IProductDocument>(
       type: Number,
       required: true,
     },
+    reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
   },
   {
     timestamps: true,
+    methods: {
+      async addReview(reviewId: string): Promise<IProductMethods | null> {
+        return ProductModel.findByIdAndUpdate(this._id, { $push: { reviews: reviewId } }).exec();
+      },
+    },
   },
 );
 
