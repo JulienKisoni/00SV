@@ -6,7 +6,11 @@ import * as reviewCtrl from '../controllers/reviews';
 
 const reviewRouter = Router();
 
+/* [GET] */
 reviewRouter.get('/', reviewCtrl.getAllReviews);
+reviewRouter.get('/:reviewId', reviewCtrl.getOneReview);
+
+/* [POST] */
 reviewRouter.post('/', productMiddlewares.isNotProductOwner, reviewMiddlewares.notAlreadyReviewed, reviewCtrl.addReview);
 
 export { reviewRouter };

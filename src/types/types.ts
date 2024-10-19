@@ -115,6 +115,11 @@ namespace API_TYPES {
         productId: string;
       };
     };
+    reviews: {
+      getOne: {
+        reviewId: string;
+      };
+    };
   }
 
   export interface Routes {

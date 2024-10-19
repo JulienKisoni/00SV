@@ -49,7 +49,24 @@ export const addReview = async (payload: AddReviewPayload): AddReviewResponse =>
 
 type GetAllReviewsResponse = Promise<GeneralResponse<{ reviews: Partial<IReviewDocument>[] }>>;
 export const getAllReviews = async (): GetAllReviewsResponse => {
-  const result = await ReviewModel.find({}).lean().exec();
-  const reviews = result.map((review) => transformReview({ review, excludedFields: ['__v'] }));
+  const results = await ReviewModel.find({}).lean().exec();
+  const reviews = results.map((review) => transformReview({ review, excludedFields: ['__v'] }));
   return { error: undefined, data: { reviews } };
+};
+
+type GetOneReviewParams = API_TYPES.Routes['params']['reviews']['getOne'];
+type GetOneReviewResponse = Promise<GeneralResponse<{ review: Partial<IReviewDocument> }>>;
+export const getOneReview = async (params: GetOneReviewParams): GetOneReviewResponse => {
+  const { reviewId } = params;
+  const review = await ReviewModel.findById(reviewId).lean().exec();
+  if (!review?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find review (${reviewId})`,
+      publicMessage: 'This review does not exist',
+    });
+    return { error };
+  }
+  const transformed = transformReview({ review, excludedFields: ['__v'] });
+  return { data: { review: transformed } };
 };

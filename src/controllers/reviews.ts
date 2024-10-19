@@ -65,3 +65,29 @@ export const getAllReviews = async (_req: ExtendedRequest<undefined>, res: Respo
 
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
+
+type GetOneReviewParams = API_TYPES.Routes['params']['reviews']['getOne'];
+export const getOneReview = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as GetOneReviewParams;
+
+  const reviewIdMessages: LanguageMessages = {
+    'any.required': 'Please provide the review id',
+    'string.pattern.base': 'Please provide a valid review id',
+  };
+
+  const schema = Joi.object<GetOneReviewParams>({
+    reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
+  });
+
+  const { error, value } = schema.validate(params);
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { error: _error, data } = await reviewBusiness.getOneReview(value);
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};
