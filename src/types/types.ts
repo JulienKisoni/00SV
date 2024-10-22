@@ -16,6 +16,16 @@ namespace API_TYPES {
     tokens?: Tokens;
   }
 
+  interface CartItem {
+    productId: string;
+    quantity: number;
+  }
+
+  // enum ORDER_STATUS {
+  //   PENDING = 'PENDING',
+  //   COMPLETED = 'COMPLETED',
+  // }
+
   interface AddStore {
     userId: string;
     active: boolean;
@@ -65,6 +75,11 @@ namespace API_TYPES {
         title?: string;
         content?: string;
         stars?: number;
+      };
+    };
+    orders: {
+      add: {
+        items: CartItem[];
       };
     };
   }

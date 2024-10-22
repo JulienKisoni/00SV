@@ -2,6 +2,7 @@ import { Schema } from 'mongoose';
 import { Request } from 'express';
 
 import { GenericError } from '../middlewares/errors';
+import { ORDER_STATUS } from './enums';
 
 export enum USER_ROLES {
   user = 'user',
@@ -79,4 +80,19 @@ export interface IReviewDocument extends Timestamps {
   productId: string | Schema.Types.ObjectId;
   owner: string | Schema.Types.ObjectId;
   __v: number;
+}
+
+export interface CartItem {
+  productId: string | Schema.Types.ObjectId;
+  quantity: number;
+}
+
+export interface IOrderDocument extends Timestamps {
+  __v: number;
+  _id: string | Schema.Types.ObjectId;
+  items: CartItem[];
+  owner: string | Schema.Types.ObjectId;
+  totalPrice: number;
+  orderNumber: string;
+  status: ORDER_STATUS;
 }

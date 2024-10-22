@@ -8,3 +8,8 @@ export enum HTTP_STATUS_CODES {
   CREATED = 201,
   OK = 200,
 }
+
+export enum ORDER_STATUS {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+}
