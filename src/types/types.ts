@@ -115,6 +115,11 @@ namespace API_TYPES {
         storeId: string;
       };
     };
+    orders: {
+      getUserOrders: {
+        userId: string;
+      };
+    };
   }
 
   export interface DecodedToken {

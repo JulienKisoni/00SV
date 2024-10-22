@@ -3,7 +3,7 @@ import Joi, { LanguageMessages } from 'joi';
 
 import { ExtendedRequest } from '../types/models';
 import { regex } from '../helpers/constants';
-import { handleError } from '../middlewares/errors';
+import { createError, handleError } from '../middlewares/errors';
 import * as orderBusiness from '../business/orders';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
@@ -58,5 +58,19 @@ export const getOneOrder = async (req: ExtendedRequest<undefined>, res: Response
   if (error) {
     return handleError({ error, next });
   }
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};
+
+export const getUserOrders = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const userId = req.user?._id.toString();
+  if (!userId) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+      message: 'No user associated with the request',
+      publicMessage: 'Please make sur you are logged in',
+    });
+    return handleError({ error, next });
+  }
+  const { data } = await orderBusiness.getUserOrders({ userId });
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };

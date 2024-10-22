@@ -131,4 +131,10 @@ export const getOneOrder = async (payload: GetOneOrderPayload): GetOneOrderRespo
   return { data: { order: transformOrder({ order, excludedFields: ['__v'] }) } };
 };
 
-export const getUserOrders = async () => {};
+type GetUserOrdersPayload = API_TYPES.Routes['business']['orders']['getUserOrders'];
+export const getUserOrders = async (payload: GetUserOrdersPayload): GetAllOrdersResponse => {
+  const { userId } = payload;
+  const results = await OrderModel.find({ owner: userId }).lean().exec();
+  const orders = results.map((order) => transformOrder({ order, excludedFields: ['__v'] }));
+  return { data: { orders } };
+};
