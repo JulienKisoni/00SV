@@ -21,10 +21,10 @@ namespace API_TYPES {
     quantity: number;
   }
 
-  // enum ORDER_STATUS {
-  //   PENDING = 'PENDING',
-  //   COMPLETED = 'COMPLETED',
-  // }
+  enum ORDER_STATUS {
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED',
+  }
 
   interface AddStore {
     userId: string;
@@ -80,6 +80,10 @@ namespace API_TYPES {
     orders: {
       add: {
         items: CartItem[];
+      };
+      updateOne: {
+        items?: CartItem[];
+        status?: ORDER_STATUS;
       };
     };
   }

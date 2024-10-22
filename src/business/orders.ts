@@ -1,5 +1,6 @@
 import ShortUniqueId from 'short-unique-id';
 import omit from 'lodash.omit';
+import isEmpty from 'lodash.isempty';
 
 import { CartItem, GeneralResponse, IOrderDocument, IProductDocument } from '../types/models';
 import { createError } from '../middlewares/errors';
@@ -49,16 +50,12 @@ const generateOrderNumber = (): string => {
 };
 
 type ValidCreateOrderPayload = Pick<IOrderDocument, 'items' | 'owner' | 'totalPrice' | 'orderNumber' | 'status'>;
-type AddOrderBody = API_TYPES.Routes['body']['orders']['add'];
-interface AddOrderParams {
+type PrepareOrderResponse = Promise<GeneralResponse<{ payload: ValidCreateOrderPayload }>>;
+interface PrepareOrderParams {
+  items?: CartItem[];
   owner?: string;
-  body: AddOrderBody;
 }
-type AddOrderResponse = Promise<GeneralResponse<{ orderId: string }>>;
-export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
-  const { owner, body } = params;
-  const { items } = body;
-
+const prepareOrderPayload = async ({ items, owner }: PrepareOrderParams): PrepareOrderResponse => {
   if (!items?.length) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
@@ -67,6 +64,7 @@ export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
     });
     return { error };
   }
+
   if (!owner) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
@@ -75,8 +73,7 @@ export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
     });
     return { error };
   }
-
-  const productIds: string[] = items.map((item) => item.productId);
+  const productIds: string[] = items.map((item) => item.productId.toString());
 
   const products = await ProductModel.find({ _id: { $in: productIds } });
 
@@ -99,6 +96,30 @@ export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
     orderNumber,
     status: ORDER_STATUS.PENDING,
   };
+  return { data: { payload } };
+};
+type AddOrderBody = API_TYPES.Routes['body']['orders']['add'];
+interface AddOrderParams {
+  owner?: string;
+  body: AddOrderBody;
+}
+type AddOrderResponse = Promise<GeneralResponse<{ orderId: string }>>;
+export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
+  const { owner, body } = params;
+  const { items } = body;
+
+  const { error, data } = await prepareOrderPayload({ items, owner });
+  if (error) {
+    return { error };
+  } else if (!data) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.STH_WENT_WRONG,
+      message: 'Could not generate payload',
+      publicMessage: 'Something went wrong while generating the payload',
+    });
+    return { error };
+  }
+  const payload = data.payload;
 
   const order = await OrderModel.create(payload);
 
@@ -158,4 +179,57 @@ export const deleteOne = async (payload: DeleteOneOrderPayload): DeleteOneOrderR
   }
   await OrderModel.findByIdAndDelete(orderId);
   return { error: undefined, data: undefined };
+};
+
+type UpdateOneOrderBody = API_TYPES.Routes['body']['orders']['updateOne'];
+type UpdateOneOrderResponse = Promise<GeneralResponse<{ order: Partial<IOrderDocument> }>>;
+interface UpdateOneOrderPayload {
+  body: UpdateOneOrderBody | undefined;
+  orderId: string;
+  userId?: string;
+  order?: IOrderDocument;
+}
+export const updateOne = async (payload: UpdateOneOrderPayload): UpdateOneOrderResponse => {
+  const { body, orderId, userId, order } = payload;
+
+  if (!body || isEmpty(body)) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: 'No body associated with the request',
+      publicMessage: 'Please add valid fields to your request body',
+    });
+    return { error };
+  }
+  const { items, status } = body;
+
+  if (items && !items?.length) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
+      message: 'No items associated with the request',
+      publicMessage: 'Please add valid items to your order',
+    });
+    return { error };
+  }
+
+  const _items = items || order?.items;
+
+  const { data, error } = await prepareOrderPayload({ items: _items, owner: userId });
+  if (error) {
+    return { error };
+  }
+  const value = data?.payload;
+  if (status && value) {
+    value.status = status;
+  }
+  const newOrder = await OrderModel.findByIdAndUpdate(orderId, value).lean().exec();
+  if (!newOrder?._id) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find order (${orderId})`,
+      publicMessage: 'This order does not exist',
+    });
+    return { error };
+  }
+  const transformed = transformOrder({ order: newOrder, excludedFields: ['__v'] });
+  return { data: { order: transformed } };
 };

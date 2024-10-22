@@ -5,7 +5,7 @@ import { ExtendedRequest } from '../types/models';
 import { regex } from '../helpers/constants';
 import { createError, handleError } from '../middlewares/errors';
 import * as orderBusiness from '../business/orders';
-import { HTTP_STATUS_CODES } from '../types/enums';
+import { HTTP_STATUS_CODES, ORDER_STATUS } from '../types/enums';
 
 type AddOrderBody = API_TYPES.Routes['body']['orders']['add'];
 export const addOrder = async (req: ExtendedRequest<AddOrderBody>, res: Response, next: NextFunction) => {
@@ -83,4 +83,48 @@ export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, 
     return handleError({ error, next });
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
+};
+
+type UpdateOneOrderBody = API_TYPES.Routes['body']['orders']['updateOne'];
+type UpdateOneOrderParams = API_TYPES.Routes['params']['orders']['getOne'];
+export const updateOne = async (req: ExtendedRequest<UpdateOneOrderBody>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as UpdateOneOrderParams;
+  const productIdMessages: LanguageMessages = {
+    'any.required': 'Please a productId is required for each item inside your order',
+    'string.pattern.base': 'Please provide a valid productId for each item inside your order',
+  };
+  const quantityMessages: LanguageMessages = {
+    'any.required': 'Please provide quantity for each item inside your order',
+    'number.min': 'Each item inside your order should at leat have quantity equals to 1',
+  };
+  const statusMessages: LanguageMessages = {
+    'any.only': 'Please provide a valid status',
+  };
+
+  const schema = Joi.object<UpdateOneOrderBody>({
+    items: Joi.array().items(
+      Joi.object({
+        productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
+        quantity: Joi.number().min(1).required().messages(quantityMessages),
+      }),
+    ),
+    status: Joi.string().valid(ORDER_STATUS.COMPLETED).messages(statusMessages),
+  });
+
+  const { error, value } = schema.validate(req.body, { stripUnknown: true });
+  if (error) {
+    return handleError({ error, next });
+  }
+
+  const { error: _error, data } = await orderBusiness.updateOne({
+    body: value,
+    orderId: params.orderId,
+    userId: req.user?._id.toString(),
+    order: req.order,
+  });
+  if (_error) {
+    return handleError({ error: _error, next });
+  }
+
+  res.status(HTTP_STATUS_CODES.OK).json(data);
 };

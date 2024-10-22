@@ -15,4 +15,7 @@ orderRouters.post('/', orderCtrl.addOrder);
 /* [DELETE] */
 orderRouters.delete('/:orderId', orderMiddlewares.isOrderOwner, orderCtrl.deleteOne);
 
+/* [PATCH] */
+orderRouters.patch('/:orderId', orderMiddlewares.isOrderOwner, orderCtrl.updateOne);
+
 export { orderRouters };
