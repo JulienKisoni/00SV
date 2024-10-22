@@ -1,10 +1,20 @@
 import ShortUniqueId from 'short-unique-id';
+import omit from 'lodash.omit';
 
 import { CartItem, GeneralResponse, IOrderDocument, IProductDocument } from '../types/models';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES, ORDER_STATUS } from '../types/enums';
 import { ProductModel } from '../models/product';
 import { OrderModel } from '../models/order';
+
+type TransformKeys = keyof IOrderDocument;
+interface ITransformOrder {
+  excludedFields: TransformKeys[];
+  order: IOrderDocument;
+}
+const transformOrder = ({ order, excludedFields }: ITransformOrder): Partial<IOrderDocument> => {
+  return omit(order, excludedFields);
+};
 
 interface CalculatePriceArgs {
   items: CartItem[];
@@ -93,4 +103,11 @@ export const addOrder = async (params: AddOrderParams): AddOrderResponse => {
   const order = await OrderModel.create(payload);
 
   return { data: { orderId: order._id.toString() } };
+};
+
+type GetAllOrdersResponse = Promise<GeneralResponse<{ orders: Partial<IOrderDocument>[] }>>;
+export const getAllOrders = async (): GetAllOrdersResponse => {
+  const results = await OrderModel.find({}).lean().exec();
+  const orders = results.map((order) => transformOrder({ order, excludedFields: ['__v'] }));
+  return { data: { orders } };
 };
