@@ -138,3 +138,24 @@ export const getUserOrders = async (payload: GetUserOrdersPayload): GetAllOrders
   const orders = results.map((order) => transformOrder({ order, excludedFields: ['__v'] }));
   return { data: { orders } };
 };
+
+type DeleteOneOrderParams = API_TYPES.Routes['params']['orders']['deleteOne'];
+type DeleteOneOrderResponse = Promise<GeneralResponse<undefined>>;
+interface DeleteOneOrderPayload {
+  params: DeleteOneOrderParams;
+  order?: IOrderDocument;
+}
+export const deleteOne = async (payload: DeleteOneOrderPayload): DeleteOneOrderResponse => {
+  const { params, order } = payload;
+  const { orderId } = params;
+  if (!order || order._id.toString() !== orderId) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `Could not find corresponding order (${orderId})`,
+      publicMessage: 'This order does not exist',
+    });
+    return { error };
+  }
+  await OrderModel.findByIdAndDelete(orderId);
+  return { error: undefined, data: undefined };
+};

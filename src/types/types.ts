@@ -162,6 +162,9 @@ namespace API_TYPES {
       getOne: {
         orderId: string;
       };
+      deleteOne: {
+        orderId: string;
+      };
     };
   }
 

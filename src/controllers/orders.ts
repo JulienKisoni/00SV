@@ -74,3 +74,13 @@ export const getUserOrders = async (req: ExtendedRequest<undefined>, res: Respon
   const { data } = await orderBusiness.getUserOrders({ userId });
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
+
+type DeleteOneOrderParams = API_TYPES.Routes['params']['orders']['deleteOne'];
+export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as DeleteOneOrderParams;
+  const { error } = await orderBusiness.deleteOne({ params, order: req.order });
+  if (error) {
+    return handleError({ error, next });
+  }
+  res.status(HTTP_STATUS_CODES.OK).json({});
+};

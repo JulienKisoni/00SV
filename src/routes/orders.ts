@@ -12,4 +12,7 @@ orderRouters.get('/:orderId', orderMiddlewares.isOrderOwner, orderCtrl.getOneOrd
 /* [POST] */
 orderRouters.post('/', orderCtrl.addOrder);
 
+/* [DELETE] */
+orderRouters.delete('/:orderId', orderMiddlewares.isOrderOwner, orderCtrl.deleteOne);
+
 export { orderRouters };
