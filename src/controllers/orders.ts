@@ -50,3 +50,13 @@ export const getAllOrders = async (_req: ExtendedRequest<undefined>, res: Respon
   const { data } = await orderBusiness.getAllOrders();
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
+
+type GetOneOrderParams = API_TYPES.Routes['params']['orders']['getOne'];
+export const getOneOrder = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+  const params = req.params as unknown as GetOneOrderParams;
+  const { data, error } = await orderBusiness.getOneOrder({ order: req.order, orderId: params.orderId, userId: req.user?._id.toString() });
+  if (error) {
+    return handleError({ error, next });
+  }
+  res.status(HTTP_STATUS_CODES.OK).json(data);
+};

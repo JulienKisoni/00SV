@@ -111,3 +111,24 @@ export const getAllOrders = async (): GetAllOrdersResponse => {
   const orders = results.map((order) => transformOrder({ order, excludedFields: ['__v'] }));
   return { data: { orders } };
 };
+
+interface GetOneOrderPayload {
+  order?: IOrderDocument;
+  userId?: string;
+  orderId?: string;
+}
+type GetOneOrderResponse = Promise<GeneralResponse<{ order: Partial<IOrderDocument> }>>;
+export const getOneOrder = async (payload: GetOneOrderPayload): GetOneOrderResponse => {
+  const { order, userId, orderId } = payload;
+  if (order?._id.toString() !== orderId || order?.owner.toString() !== userId || !order) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.NOT_FOUND,
+      message: `No order found (${orderId})`,
+      publicMessage: 'Could not found order',
+    });
+    return { error };
+  }
+  return { data: { order: transformOrder({ order, excludedFields: ['__v'] }) } };
+};
+
+export const getUserOrders = async () => {};

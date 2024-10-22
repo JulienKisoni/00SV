@@ -153,6 +153,11 @@ namespace API_TYPES {
         reviewId: string;
       };
     };
+    orders: {
+      getOne: {
+        orderId: string;
+      };
+    };
   }
 
   export interface Routes {
