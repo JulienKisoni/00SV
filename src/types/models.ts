@@ -87,6 +87,7 @@ export interface IReviewDocument extends Timestamps {
 export interface CartItem {
   productId: string | Schema.Types.ObjectId;
   quantity: number;
+  product?: Partial<IProductDocument>;
 }
 
 export interface IOrderDocument extends Timestamps {

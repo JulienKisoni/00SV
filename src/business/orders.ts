@@ -7,6 +7,27 @@ import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES, ORDER_STATUS } from '../types/enums';
 import { ProductModel } from '../models/product';
 import { OrderModel } from '../models/order';
+import { RootFilterQuery } from 'mongoose';
+import { transformProduct } from './products';
+
+type RetreiveOrderFilters = RootFilterQuery<IOrderDocument>;
+const retrieveOrder = async (filters: RetreiveOrderFilters): Promise<IOrderDocument | null> => {
+  const order = (await OrderModel.findOne(filters).populate({ path: 'items.productId' }).lean().exec()) as IOrderDocument;
+  if (!order || order === null) {
+    return null;
+  }
+  const newItems = order.items.map((item) => {
+    const product = item.productId as unknown as IProductDocument;
+    const productId = product._id.toString();
+    return {
+      ...item,
+      productId,
+      product: transformProduct({ product, excludedFields: ['__v'] }),
+    };
+  });
+  order.items = newItems;
+  return order;
+};
 
 type TransformKeys = keyof IOrderDocument;
 interface ITransformOrder {
@@ -141,7 +162,8 @@ interface GetOneOrderPayload {
 type GetOneOrderResponse = Promise<GeneralResponse<{ order: Partial<IOrderDocument> }>>;
 export const getOneOrder = async (payload: GetOneOrderPayload): GetOneOrderResponse => {
   const { order, userId, orderId } = payload;
-  if (order?._id.toString() !== orderId || order?.owner.toString() !== userId || !order) {
+  const data = await retrieveOrder({ _id: orderId });
+  if (order?._id.toString() !== orderId || order?.owner.toString() !== userId || !order || data === null) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
       message: `No order found (${orderId})`,
@@ -149,7 +171,8 @@ export const getOneOrder = async (payload: GetOneOrderPayload): GetOneOrderRespo
     });
     return { error };
   }
-  return { data: { order: transformOrder({ order, excludedFields: ['__v'] }) } };
+  const newOrder = transformOrder({ order: data, excludedFields: ['__v'] });
+  return { data: { order: newOrder } };
 };
 
 type GetUserOrdersPayload = API_TYPES.Routes['business']['orders']['getUserOrders'];

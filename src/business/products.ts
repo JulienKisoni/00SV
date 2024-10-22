@@ -12,7 +12,7 @@ interface ITransformProduct {
   excludedFields: TransformKeys[];
   product: IProductDocument;
 }
-const transformProduct = ({ product, excludedFields }: ITransformProduct): Partial<IProductDocument> => {
+export const transformProduct = ({ product, excludedFields }: ITransformProduct): Partial<IProductDocument> => {
   return omit(product, excludedFields);
 };
 
