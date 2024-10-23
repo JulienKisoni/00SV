@@ -37,6 +37,7 @@ export interface IStoreDocument extends Timestamps {
   _id: string | Schema.Types.ObjectId;
   name: string;
   owner: string | Schema.Types.ObjectId;
+  ownerDetails?: Partial<IUserDocument>;
   products: (string | Schema.Types.ObjectId)[];
   description: string;
   active: boolean;

@@ -1,13 +1,14 @@
 import { Model, Schema, UpdateQuery, UpdateWriteOpResult, model } from 'mongoose';
 import { IStoreDocument } from 'src/types/models';
 
+type IStoreSchema = Omit<IStoreDocument, 'ownerDetails'>;
 export interface IStoreMethods extends IStoreDocument {
   updateSelf?: (update: UpdateQuery<IStoreDocument>) => Promise<UpdateWriteOpResult>;
 }
 
 export interface IStoreStatics extends Model<IStoreDocument> {}
 
-const storeSchema = new Schema<IStoreDocument>(
+const storeSchema = new Schema<IStoreSchema>(
   {
     name: {
       type: String,

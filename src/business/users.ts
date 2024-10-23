@@ -1,13 +1,22 @@
 import omit from 'lodash.omit';
 import isEmpty from 'lodash.isempty';
 import { verify } from 'jsonwebtoken';
+import { UpdateQuery } from 'mongoose';
 
 import { IUserDocument, USER_ROLES } from '../types/models';
 import { IUserMethods, UserModel } from '../models/user';
 import { createError, GenericError } from '../middlewares/errors';
 import { encrypt } from '../utils/hash';
 import { HTTP_STATUS_CODES } from '../types/enums';
-import { UpdateQuery } from 'mongoose';
+
+type TransformKeys = keyof IUserDocument;
+interface ITransformProduct {
+  excludedFields: TransformKeys[];
+  user: IUserDocument;
+}
+export const transformUser = ({ user, excludedFields }: ITransformProduct): Partial<IUserDocument> => {
+  return omit(user, excludedFields);
+};
 
 interface AddUserPayload extends Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'> {
   role: USER_ROLES;
@@ -48,7 +57,7 @@ export const getUsers = async (): Promise<Partial<IUserMethods>[]> => {
   const users = await UserModel.find<IUserMethods>({}).lean().exec();
   return (
     users.map((user) => {
-      const transformed = omit(user, ['password', '__v', 'private']);
+      const transformed = transformUser({ user, excludedFields: ['password', '__v', 'private'] });
       return transformed;
     }) || []
   );
@@ -138,7 +147,7 @@ export const updateOne = async ({ payload, userId }: EditUserParams): Promise<{ 
 type GetOneUserPayload = API_TYPES.Routes['business']['users']['getOne'];
 interface GetOneUserResponse {
   error?: GenericError;
-  user?: Omit<IUserDocument, 'password' | 'private'>;
+  user?: Partial<IUserDocument>;
 }
 export const getOne = async ({ userId }: GetOneUserPayload): Promise<GetOneUserResponse> => {
   const user = await UserModel.findById(userId).lean().exec();
@@ -150,5 +159,6 @@ export const getOne = async ({ userId }: GetOneUserPayload): Promise<GetOneUserR
     });
     return { error };
   }
-  return { user: omit(user, ['password', 'private']) };
+  const transformed = transformUser({ user, excludedFields: ['password', '__v', 'private'] });
+  return { user: transformed };
 };

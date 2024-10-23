@@ -1,12 +1,27 @@
 import omit from 'lodash.omit';
 import isEmpty from 'lodash.isempty';
+import { UpdateQuery } from 'mongoose';
 
 import { IUserMethods, UserModel } from '../models/user';
 import { IStoreMethods, StoreModel } from '../models/store';
 import { createError, GenericError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
-import { IStoreDocument } from 'src/types/models';
-import { UpdateQuery } from 'mongoose';
+import { IStoreDocument, IUserDocument, RetreiveOneFilters } from '../types/models';
+import { transformUser } from './users';
+
+const retrieveStore = async (filters: RetreiveOneFilters<IStoreDocument>): Promise<IStoreDocument | null> => {
+  const store = (await StoreModel.findOne(filters).populate({ path: 'owner' }).lean().exec()) as IStoreDocument;
+  if (!store || store === null) {
+    return null;
+  }
+  const ownerDetails = store.owner as unknown as IUserDocument;
+  const owner = ownerDetails._id.toString();
+
+  store.ownerDetails = transformUser({ user: ownerDetails, excludedFields: ['__v', 'private', 'password'] });
+  store.owner = owner;
+
+  return store;
+};
 
 type AddStorePayload = API_TYPES.Routes['business']['stores']['addStore'];
 type AddStoreResponse = Promise<{ storeId?: string; error?: GenericError }>;
@@ -99,7 +114,7 @@ interface GetOneUserResponse {
   store?: IStoreDocument;
 }
 export const getOne = async ({ storeId }: GetOneStorePayload): Promise<GetOneUserResponse> => {
-  const store = await StoreModel.findById(storeId).lean().exec();
+  const store = await retrieveStore({ _id: storeId });
   if (!store?._id) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
