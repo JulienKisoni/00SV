@@ -54,6 +54,7 @@ export interface IProductDocument extends Timestamps {
   active: boolean;
   unitPrice: number;
   reviews: (string | Schema.Types.ObjectId)[];
+  reviewDetails?: Partial<IReviewDocument>[];
   __v: number;
 }
 

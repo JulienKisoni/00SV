@@ -31,7 +31,7 @@ interface ITransformProduct {
   excludedFields: TransformKeys[];
   review: IReviewDocument;
 }
-const transformReview = ({ review, excludedFields }: ITransformProduct): Partial<IReviewDocument> => {
+export const transformReview = ({ review, excludedFields }: ITransformProduct): Partial<IReviewDocument> => {
   return omit(review, excludedFields);
 };
 

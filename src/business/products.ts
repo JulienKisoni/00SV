@@ -1,11 +1,26 @@
 import isEmpty from 'lodash.isempty';
 import omit from 'lodash.omit';
 
-import { GeneralResponse, IProductDocument } from '../types/models';
+import { GeneralResponse, IProductDocument, IReviewDocument, RetreiveOneFilters } from '../types/models';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { ProductModel } from '../models/product';
 import { StoreModel } from '../models/store';
+import { transformReview } from './reviews';
+
+const retrieveProduct = async (filters: RetreiveOneFilters<IProductDocument>): Promise<IProductDocument | null> => {
+  const product = (await ProductModel.findOne(filters).populate({ path: 'reviews' }).lean().exec()) as IProductDocument;
+  if (!product || product === null) {
+    return null;
+  }
+  const reviewDetails = product.reviews as unknown as IReviewDocument[];
+  const reviews = reviewDetails.map((review) => review._id.toString());
+
+  product.reviews = reviews;
+  product.reviewDetails = reviewDetails.map((review) => transformReview({ review, excludedFields: ['__v'] }));
+
+  return product;
+};
 
 type TransformKeys = keyof IProductDocument;
 interface ITransformProduct {
@@ -75,7 +90,7 @@ export const deleteOne = async ({ productId, storeId }: DeleteOneProductPayload)
 type GetOneProductPayload = API_TYPES.Routes['params']['products']['getOne'];
 type GetOneProductResponse = Promise<GeneralResponse<Partial<IProductDocument>>>;
 export const getOne = async ({ productId }: GetOneProductPayload): GetOneProductResponse => {
-  const result = await ProductModel.findOne({ _id: productId }).lean().exec();
+  const result = await retrieveProduct({ _id: productId });
   if (!result) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,

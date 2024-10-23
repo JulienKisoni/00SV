@@ -1,6 +1,7 @@
 import { model, Model, Schema } from 'mongoose';
 import { IProductDocument } from 'src/types/models';
 
+type IProductSchema = Omit<IProductDocument, 'reviewDetails'>;
 export interface IProductMethods extends IProductDocument {
   addReview?: (reviewId: string) => Promise<IProductDocument | null>;
   removeReview?: (reviewId: string) => Promise<IProductDocument | null>;
@@ -8,7 +9,7 @@ export interface IProductMethods extends IProductDocument {
 
 export interface IProductStatics extends Model<IProductDocument> {}
 
-const productSchema = new Schema<IProductDocument>(
+const productSchema = new Schema<IProductSchema>(
   {
     name: {
       type: String,
