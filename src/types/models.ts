@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { RootFilterQuery, Schema } from 'mongoose';
 import { Request } from 'express';
 
 import { GenericError } from '../middlewares/errors';
@@ -80,14 +80,16 @@ export interface IReviewDocument extends Timestamps {
   content: string;
   stars: number;
   productId: string | Schema.Types.ObjectId;
+  productDetails?: Partial<IProductDocument>;
   owner: string | Schema.Types.ObjectId;
+  ownerDetails?: Partial<IUserDocument>;
   __v: number;
 }
 
 export interface CartItem {
   productId: string | Schema.Types.ObjectId;
   quantity: number;
-  product?: Partial<IProductDocument>;
+  productDetails?: Partial<IProductDocument>;
 }
 
 export interface IOrderDocument extends Timestamps {
@@ -99,3 +101,5 @@ export interface IOrderDocument extends Timestamps {
   orderNumber: string;
   status: ORDER_STATUS;
 }
+
+export type RetreiveOneFilters<T> = RootFilterQuery<T>;

@@ -1,11 +1,30 @@
 import isEmpty from 'lodash.isempty';
 import omit from 'lodash.omit';
 
-import { GeneralResponse, IReviewDocument } from '../types/models';
+import { GeneralResponse, IProductDocument, IReviewDocument, IUserDocument, RetreiveOneFilters } from '../types/models';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import { IProductMethods, ProductModel } from '../models/product';
 import { ReviewModel } from '../models/review';
+import { transformProduct } from './products';
+
+const retrieveReview = async (filters: RetreiveOneFilters<IReviewDocument>): Promise<IReviewDocument | null> => {
+  const review = (await ReviewModel.findOne(filters).populate({ path: 'productId' }).populate({ path: 'owner' }).lean().exec()) as IReviewDocument;
+  if (!review || review === null) {
+    return null;
+  }
+  const product = review.productId as unknown as IProductDocument;
+  const productId = product._id.toString();
+  const productDetails = transformProduct({ product, excludedFields: ['__v'] });
+  review.productId = productId;
+  review.productDetails = productDetails;
+
+  const ownerDetails = review.owner as unknown as IUserDocument;
+  review.ownerDetails = ownerDetails;
+  review.owner = ownerDetails._id.toString();
+
+  return review;
+};
 
 type TransformKeys = keyof IReviewDocument;
 interface ITransformProduct {
@@ -58,7 +77,7 @@ type GetOneReviewParams = API_TYPES.Routes['params']['reviews']['getOne'];
 type GetOneReviewResponse = Promise<GeneralResponse<{ review: Partial<IReviewDocument> }>>;
 export const getOneReview = async (params: GetOneReviewParams): GetOneReviewResponse => {
   const { reviewId } = params;
-  const review = await ReviewModel.findById(reviewId).lean().exec();
+  const review = await retrieveReview({ _id: reviewId });
   if (!review?._id) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,

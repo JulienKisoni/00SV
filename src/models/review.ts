@@ -1,11 +1,12 @@
 import { Model, Schema, model } from 'mongoose';
 import { IReviewDocument } from 'src/types/models';
 
-interface IReviewMethods extends IReviewDocument {}
+type ReviewSchema = Omit<IReviewDocument, 'product' | 'ownerDetails'>;
+interface IReviewMethods extends ReviewSchema {}
 
-interface IReviewStatics extends Model<IReviewDocument> {}
+interface IReviewStatics extends Model<ReviewSchema> {}
 
-const reviewSchema = new Schema<IReviewDocument>({
+const reviewSchema = new Schema<ReviewSchema>({
   title: {
     type: String,
     required: true,
