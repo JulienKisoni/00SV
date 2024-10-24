@@ -14,6 +14,7 @@ import httpLogger from './middlewares/httpLogger';
 import { validateToken } from './middlewares/validateToken';
 import router from './routes/index';
 import { errorHandler } from './middlewares/errors';
+import { swaggerDoc } from '../swagger';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -61,6 +62,7 @@ function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr?.port}`;
   console.info(`Server is listening on ${bind}`);
+  swaggerDoc(router);
 }
 
 const init = async () => {

@@ -11,6 +11,14 @@ export const nonSecureRoutes: { path: string; method: string }[] = [
     path: '/users/signup',
     method: 'POST',
   },
+  {
+    path: '/v1/api-docs',
+    method: 'GET',
+  },
+  {
+    path: '/favicon.ico',
+    method: 'GET',
+  },
 ];
 
 export const regex = {
