@@ -23,7 +23,8 @@ export interface IUserDocument extends Timestamps {
   username: string;
   email: string;
   password: string;
-  storeIds?: string | Schema.Types.ObjectId;
+  storeIds?: (string | Schema.Types.ObjectId)[];
+  storesDetails?: Partial<IStoreDocument>[];
   profile: {
     role: USER_ROLES;
   };

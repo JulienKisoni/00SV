@@ -6,6 +6,8 @@ import { compareValues } from '../utils/hash';
 import { createError, GenericError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 
+type IUserSchema = Omit<IUserDocument, 'storesDetails'>;
+
 export interface IUserMethods extends IUserDocument {
   comparePassword?: (password: string) => Promise<{ areEqual: boolean }>;
   checkValidToken?: (decodedToken: API_TYPES.DecodedToken) => boolean;
@@ -17,7 +19,7 @@ export interface IUserStatics extends Model<IUserMethods> {
   findByRefreshToken(refreshToken: string): Promise<{ user?: IUserMethods; error?: GenericError }>;
 }
 
-const userSchema = new Schema<IUserDocument>(
+const userSchema = new Schema<IUserSchema>(
   {
     username: {
       type: String,
@@ -37,6 +39,7 @@ const userSchema = new Schema<IUserDocument>(
     storeIds: [
       {
         type: Schema.Types.ObjectId,
+        ref: 'Store',
       },
     ],
     profile: {

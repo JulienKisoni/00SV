@@ -3,11 +3,25 @@ import isEmpty from 'lodash.isempty';
 import { verify } from 'jsonwebtoken';
 import { UpdateQuery } from 'mongoose';
 
-import { IUserDocument, USER_ROLES } from '../types/models';
+import { IStoreDocument, IUserDocument, RetreiveOneFilters, USER_ROLES } from '../types/models';
 import { IUserMethods, UserModel } from '../models/user';
 import { createError, GenericError } from '../middlewares/errors';
 import { encrypt } from '../utils/hash';
 import { HTTP_STATUS_CODES } from '../types/enums';
+
+const retrieveUser = async (filters: RetreiveOneFilters<IUserDocument>): Promise<IUserDocument | null> => {
+  const user = (await UserModel.findOne(filters).populate({ path: 'storeIds' }).lean().exec()) as IUserDocument;
+  if (!user || user === null) {
+    return null;
+  }
+  const storeDetails = user.storeIds as unknown as IStoreDocument[];
+  const storeIds = storeDetails.map((store) => store._id.toString());
+
+  user.storeIds = storeIds;
+  user.storesDetails = storeDetails;
+
+  return user;
+};
 
 type TransformKeys = keyof IUserDocument;
 interface ITransformProduct {
@@ -150,7 +164,7 @@ interface GetOneUserResponse {
   user?: Partial<IUserDocument>;
 }
 export const getOne = async ({ userId }: GetOneUserPayload): Promise<GetOneUserResponse> => {
-  const user = await UserModel.findById(userId).lean().exec();
+  const user = await retrieveUser({ _id: userId });
   if (!user?._id) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
