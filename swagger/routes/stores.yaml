@@ -189,6 +189,7 @@ components:
     GetStoreProducts:
       tags:
         - Stores
+        - Products
       summary: Get list of all products of a given store
       parameters:
         - name: storeId
@@ -222,6 +223,7 @@ components:
     DeleteStoreProduct:
       tags:
         - Stores
+        - Products
       summary: Delete one product from store
       parameters:
         - name: productId
@@ -256,6 +258,7 @@ components:
     AddProductToStore:
       tags:
         - Stores
+        - Products
       summary: Add one product to a given store
       parameters:
         - name: storeId

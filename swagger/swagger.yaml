@@ -34,6 +34,21 @@ paths:
       $ref: '#/components/routes/products/DeleteOne'
     patch:
       $ref: '#/components/routes/products/EditOne'
+  /products/{productId}/reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetProductReviews'
+  /reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetAll'
+    post:
+      $ref: '#/components/routes/reviews/Add'
+  /reviews/{reviewId}:
+    get:
+      $ref: '#/components/routes/reviews/GetOne'
+    delete:
+      $ref: '#/components/routes/reviews/DeleteOne'
+    patch:
+      $ref: '#/components/routes/reviews/EditOne'
 components:
   routes:
     products:
@@ -173,6 +188,234 @@ components:
               application/json:
                 schema:
                   type: object
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+    reviews:
+      GetAll:
+        tags:
+          - Reviews
+        summary: Get list of all reviews
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    reviews:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ReviewDoc'
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      GetProductReviews:
+        tags:
+          - Reviews
+          - Products
+        summary: Get all reviews of a given product
+        parameters:
+          - name: productId
+            in: path
+            description: ID of the product
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    reviews:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ReviewDoc'
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      GetOne:
+        tags:
+          - Reviews
+        summary: Get one review by ID
+        parameters:
+          - name: reviewId
+            in: path
+            description: ID of the review
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    review:
+                      $ref: '#/components/schemas/ReviewDetailsDoc'
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      DeleteOne:
+        tags:
+          - Reviews
+        summary: Delete one review by ID
+        parameters:
+          - name: reviewId
+            in: path
+            description: ID of the review to delete
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      EditOne:
+        tags:
+          - Reviews
+        summary: Edit one review by ID
+        parameters:
+          - name: reviewId
+            in: path
+            description: ID of the review to update
+            required: true
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Review title
+                    example: Review title
+                  content:
+                    type: string
+                    description: Review content
+                    example: Review content
+                    minimum: 12
+                    maximum: 100
+                  stars:
+                    type: integer
+                    description: Number of stars (from 0 to 5)
+                    minimum: 0
+                    maximum: 5
+                    example: 3
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      Add:
+        tags:
+          - Reviews
+        summary: Add a review to a product
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productId:
+                    type: string
+                    description: ID of the product the review will belong to
+                    example: 670f198f1fc4fdd76bd0AAAA
+                    required: true
+                  title:
+                    type: string
+                    description: Review title
+                    example: Review title
+                    required: true
+                  content:
+                    type: string
+                    description: Review content
+                    example: Review content
+                    required: true
+                    minimum: 12
+                    maximum: 100
+                  stars:
+                    type: integer
+                    description: Number of stars (from 0 to 5)
+                    minimum: 0
+                    maximum: 5
+                    example: 3
+                    required: true
+        responses:
+          '201':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    reviewId:
+                      type: string
+                      description: ID of the newly created review
+                      example: 670f198f1fc4fdd76bd0AAAA
           '400':
             $ref: '#/components/errors/BadRequest'
           '401':
@@ -373,6 +616,7 @@ components:
       GetStoreProducts:
         tags:
           - Stores
+          - Products
         summary: Get list of all products of a given store
         parameters:
           - name: storeId
@@ -406,6 +650,7 @@ components:
       DeleteStoreProduct:
         tags:
           - Stores
+          - Products
         summary: Delete one product from store
         parameters:
           - name: productId
@@ -440,6 +685,7 @@ components:
       AddProductToStore:
         tags:
           - Stores
+          - Products
         summary: Add one product to a given store
         parameters:
           - name: storeId
@@ -662,6 +908,47 @@ components:
           format: date-time
           description: Date of last update
           example: 2024-10-19T17:30:37.831Z
+    ReviewDetailsDoc:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Unique ID of the review
+          example: 670f198f1fc4fdd76bd0AAAA
+        title:
+          type: string
+          description: Title of the review
+          example: 'Review title #1'
+        content:
+          type: string
+          description: Unique ID of the store owner
+          example: 'Review content #1'
+        stars:
+          type: integer
+          description: Number of stars (from 0 to 5)
+          example: 4
+        productId:
+          type: string
+          description: ID of the product a review belongs to
+          example: 670f198f1fc4fdd76bd0AAAA
+        owner:
+          type: string
+          description: ID of the user who left the review
+          example: 670f198f1fc4fdd76bd0AAAA
+        createdAt:
+          type: string
+          format: date-time
+          description: Date of creation
+          example: 2024-10-19T17:30:37.831Z
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date of last update
+          example: 2024-10-19T17:30:37.831Z
+        ownerDetails:
+          $ref: '#/components/schemas/UserDoc'
+        productDetails:
+          $ref: '#/components/schemas/ProductDoc'
     StoreDoc:
       type: object
       properties:

@@ -34,3 +34,18 @@ paths:
       $ref: '#/components/routes/products/DeleteOne'
     patch:
       $ref: '#/components/routes/products/EditOne'
+  /products/{productId}/reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetProductReviews'
+  /reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetAll'
+    post:
+      $ref: '#/components/routes/reviews/Add'
+  /reviews/{reviewId}:
+    get:
+      $ref: '#/components/routes/reviews/GetOne'
+    delete:
+      $ref: '#/components/routes/reviews/DeleteOne'
+    patch:
+      $ref: '#/components/routes/reviews/EditOne'
