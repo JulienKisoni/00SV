@@ -13,7 +13,7 @@ storesRouter.get('/:storeId', storeCtrl.getOneStore);
 storesRouter.get('/:storeId/products', storeMiddlewares.getStore, productCtrl.getStoreProducts);
 
 /* [POST] */
-storesRouter.post('/:userId/add', storeCtrl.addStore);
+storesRouter.post('/', storeCtrl.addStore);
 storesRouter.post('/:storeId/products', storeMiddlewares.isStoreOwner, productCtrl.addProduct);
 
 /* [DELETE] */

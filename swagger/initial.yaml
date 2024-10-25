@@ -1,0 +1,26 @@
+openapi: 3.0.0
+info:
+  title: Store Manager Rest API
+  description: Endpoints documentation for Store Manager Rest API
+  version: 1.0.0
+paths:
+  /stores:
+    get:
+      $ref: '#/components/routes/stores/GetAll'
+    post:
+      $ref: '#/components/routes/stores/Add'
+  /stores/{storeId}:
+    get:
+      $ref: '#/components/routes/stores/GetOne'
+    delete:
+      $ref: '#/components/routes/stores/DeleteOne'
+    patch:
+      $ref: '#/components/routes/stores/EditOne'
+  /stores/{storeId}/products:
+    get:
+      $ref: '#/components/routes/stores/GetStoreProducts'
+    post:
+      $ref: '#/components/routes/stores/AddProductToStore'
+  /stores/{storeId}/products/{productId}:
+    delete:
+      $ref: '#/components/routes/stores/DeleteStoreProduct'

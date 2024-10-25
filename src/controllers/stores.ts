@@ -3,7 +3,7 @@ import Joi, { LanguageMessages } from 'joi';
 
 import { regex } from '../helpers/constants';
 import { IStoreDocument, IUserDocument } from '../types/models';
-import { convertToGenericError, createError } from '../middlewares/errors';
+import { convertToGenericError, createError, handleError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
 import * as storeBusiness from '../business/stores';
 
@@ -21,7 +21,15 @@ interface AddStoreJoiSchema {
   body: AddStoreBody;
 }
 export const addStore = async (req: ExtendedRequest<AddStoreBody>, res: Response, next: NextFunction) => {
-  const { userId } = req.params;
+  const userId = req.user?._id.toString();
+  if (!userId) {
+    const error = createError({
+      statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
+      message: 'NO user associated with the request',
+      publicMessage: 'Please make sure you are logged in',
+    });
+    return handleError({ error, next });
+  }
   const userIdMessages: LanguageMessages = {
     'any.required': 'Please provide a user id',
     'string.pattern.base': 'Please provide a valid user id',

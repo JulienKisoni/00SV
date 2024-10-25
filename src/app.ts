@@ -9,15 +9,17 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import http from 'http';
 import { connect } from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
 
 import httpLogger from './middlewares/httpLogger';
 import { validateToken } from './middlewares/validateToken';
 import router from './routes/index';
 import { errorHandler } from './middlewares/errors';
-import { swaggerDoc } from '../swagger';
+import { generateSwaggerDoc } from '../swagger';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+const swaggerDoc = generateSwaggerDoc();
 const app: express.Application = express();
 
 app.use(httpLogger);
@@ -25,6 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.use(validateToken);
 app.use('/', router);
 
@@ -62,7 +65,6 @@ function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr?.port}`;
   console.info(`Server is listening on ${bind}`);
-  swaggerDoc(router);
 }
 
 const init = async () => {
