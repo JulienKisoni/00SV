@@ -49,3 +49,15 @@ paths:
       $ref: '#/components/routes/reviews/DeleteOne'
     patch:
       $ref: '#/components/routes/reviews/EditOne'
+  /orders:
+    get:
+      $ref: '#/components/routes/orders/GetAll'
+    post:
+      $ref: '#/components/routes/orders/Add'
+  /orders/{orderId}:
+    get:
+      $ref: '#/components/routes/orders/GetOne'
+    patch:
+      $ref: '#/components/routes/orders/EditOne'
+    delete:
+      $ref: '#/components/routes/orders/DeleteOne'
