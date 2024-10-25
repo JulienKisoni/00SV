@@ -24,3 +24,13 @@ paths:
   /stores/{storeId}/products/{productId}:
     delete:
       $ref: '#/components/routes/stores/DeleteStoreProduct'
+  /products:
+    get:
+      $ref: '#/components/routes/products/GetAll'
+  /products/{productId}:
+    get:
+      $ref: '#/components/routes/products/GetOne'
+    delete:
+      $ref: '#/components/routes/products/DeleteOne'
+    patch:
+      $ref: '#/components/routes/products/EditOne'

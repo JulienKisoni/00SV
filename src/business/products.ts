@@ -88,7 +88,7 @@ export const deleteOne = async ({ productId, storeId }: DeleteOneProductPayload)
 };
 
 type GetOneProductPayload = API_TYPES.Routes['params']['products']['getOne'];
-type GetOneProductResponse = Promise<GeneralResponse<Partial<IProductDocument>>>;
+type GetOneProductResponse = Promise<GeneralResponse<{ product: Partial<IProductDocument> }>>;
 export const getOne = async ({ productId }: GetOneProductPayload): GetOneProductResponse => {
   const result = await retrieveProduct({ _id: productId });
   if (!result) {
@@ -100,7 +100,7 @@ export const getOne = async ({ productId }: GetOneProductPayload): GetOneProduct
     return { error };
   }
   const product = transformProduct({ product: result, excludedFields: ['__v'] });
-  return { data: product };
+  return { data: { product } };
 };
 
 type UpdateProductBody = API_TYPES.Routes['body']['products']['updateOne'];
