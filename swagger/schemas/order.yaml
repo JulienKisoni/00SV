@@ -22,7 +22,9 @@ components:
         status:
           type: string
           description: Current status of the order
-          enum: [PENDING, COMPLETED]
+          enum:
+            - PENDING
+            - COMPLETED
           example: 'PENDING'
         items:
           type: array
@@ -70,7 +72,9 @@ components:
         status:
           type: string
           description: Current status of the order
-          enum: [PENDING, COMPLETED]
+          enum:
+            - PENDING
+            - COMPLETED
           example: 'PENDING'
         items:
           type: array

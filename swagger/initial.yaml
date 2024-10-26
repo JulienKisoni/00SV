@@ -4,9 +4,24 @@ info:
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
 paths:
+  /users:
+    get:
+      $ref: '#/components/routes/users/GetAll'
+    post:
+      $ref: '#/components/routes/users/Signup'
+  /users/invalidateToken:
+    post:
+      $ref: '#/components/routes/users/InvalidateToken'
   /users/me/orders:
     get:
       $ref: '#/components/routes/orders/GetUserOrders'
+  /users/{userId}:
+    get:
+      $ref: '#/components/routes/users/GetOne'
+    patch:
+      $ref: '#/components/routes/users/EditOne'
+    delete:
+      $ref: '#/components/routes/users/DeleteOne'
   /stores:
     get:
       $ref: '#/components/routes/stores/GetAll'
