@@ -4,6 +4,12 @@ info:
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
 paths:
+  /auth/login:
+    post:
+      $ref: '#/components/routes/auth/Login'
+  /auth/refreshToken:
+    post:
+      $ref: '#/components/routes/auth/RefreshToken'
   /users:
     get:
       $ref: '#/components/routes/users/GetAll'

@@ -4,6 +4,12 @@ info:
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
 paths:
+  /auth/login:
+    post:
+      $ref: '#/components/routes/auth/Login'
+  /auth/refreshToken:
+    post:
+      $ref: '#/components/routes/auth/RefreshToken'
   /users:
     get:
       $ref: '#/components/routes/users/GetAll'
@@ -81,6 +87,97 @@ paths:
       $ref: '#/components/routes/orders/DeleteOne'
 components:
   routes:
+    auth:
+      Login:
+        tags:
+          - Auth
+        summary: Login and get back access and refresh tokens
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    description: User's email
+                    example: johndoe@mail.com
+                    required: true
+                  password:
+                    type: string
+                    description: User's password
+                    example: mlskdmqlksdmfl
+                    minimum: 6
+                    required: true
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                      description: Access token
+                      example: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                    refreshToken:
+                      type: string
+                      description: Access token
+                      example: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
+      RefreshToken:
+        tags:
+          - Auth
+        summary: Refresh your expired access token
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refreshToken:
+                    type: string
+                    description: The current user's refresh token
+                    example: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                    required: true
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                      description: The new access token
+                      example: >-
+                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+          '400':
+            $ref: '#/components/errors/BadRequest'
+          '401':
+            $ref: '#/components/errors/Unauthorized'
+          '403':
+            $ref: '#/components/errors/Forbidden'
+          '404':
+            $ref: '#/components/errors/NotFound'
+          '500':
+            $ref: '#/components/errors/SthWentWrong'
     orders:
       GetAll:
         tags:
