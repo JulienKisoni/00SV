@@ -17,6 +17,21 @@ export const clearDatabase = async () => {
     }
   }
 
+  /* 
+    I can use classes to avoid test repetition
+    1. Validation Class
+    const validation = new Validation(data, function);
+    validation.validateResponse
+
+    2. TestCase class
+    const test case = new TestCase(request, ect...);
+
+    testCase.runWithSuccess('');
+
+    testCase.runWithFailure
+  
+  */
+
   await Promise.all(promises);
 
   console.log('Database cleared successfully');
