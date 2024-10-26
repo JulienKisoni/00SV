@@ -3,89 +3,12 @@ info:
   title: Store Manager Rest API
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
-paths:
-  /auth/login:
-    post:
-      $ref: '#/components/routes/auth/Login'
-  /auth/refreshToken:
-    post:
-      $ref: '#/components/routes/auth/RefreshToken'
-  /users:
-    get:
-      $ref: '#/components/routes/users/GetAll'
-    post:
-      $ref: '#/components/routes/users/Signup'
-  /users/invalidateToken:
-    post:
-      $ref: '#/components/routes/users/InvalidateToken'
-  /users/me/orders:
-    get:
-      $ref: '#/components/routes/orders/GetUserOrders'
-  /users/{userId}:
-    get:
-      $ref: '#/components/routes/users/GetOne'
-    patch:
-      $ref: '#/components/routes/users/EditOne'
-    delete:
-      $ref: '#/components/routes/users/DeleteOne'
-  /stores:
-    get:
-      $ref: '#/components/routes/stores/GetAll'
-    post:
-      $ref: '#/components/routes/stores/Add'
-  /stores/{storeId}:
-    get:
-      $ref: '#/components/routes/stores/GetOne'
-    delete:
-      $ref: '#/components/routes/stores/DeleteOne'
-    patch:
-      $ref: '#/components/routes/stores/EditOne'
-  /stores/{storeId}/products:
-    get:
-      $ref: '#/components/routes/stores/GetStoreProducts'
-    post:
-      $ref: '#/components/routes/stores/AddProductToStore'
-  /stores/{storeId}/products/{productId}:
-    delete:
-      $ref: '#/components/routes/stores/DeleteStoreProduct'
-  /products:
-    get:
-      $ref: '#/components/routes/products/GetAll'
-  /products/{productId}:
-    get:
-      $ref: '#/components/routes/products/GetOne'
-    delete:
-      $ref: '#/components/routes/products/DeleteOne'
-    patch:
-      $ref: '#/components/routes/products/EditOne'
-  /products/{productId}/reviews:
-    get:
-      $ref: '#/components/routes/reviews/GetProductReviews'
-  /reviews:
-    get:
-      $ref: '#/components/routes/reviews/GetAll'
-    post:
-      $ref: '#/components/routes/reviews/Add'
-  /reviews/{reviewId}:
-    get:
-      $ref: '#/components/routes/reviews/GetOne'
-    delete:
-      $ref: '#/components/routes/reviews/DeleteOne'
-    patch:
-      $ref: '#/components/routes/reviews/EditOne'
-  /orders:
-    get:
-      $ref: '#/components/routes/orders/GetAll'
-    post:
-      $ref: '#/components/routes/orders/Add'
-  /orders/{orderId}:
-    get:
-      $ref: '#/components/routes/orders/GetOne'
-    patch:
-      $ref: '#/components/routes/orders/EditOne'
-    delete:
-      $ref: '#/components/routes/orders/DeleteOne'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Bearer
   routes:
     auth:
       Login:
@@ -1881,3 +1804,87 @@ components:
                 publicMessage:
                   type: string
                   example: Something went wrong
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      $ref: '#/components/routes/auth/Login'
+  /auth/refreshToken:
+    post:
+      $ref: '#/components/routes/auth/RefreshToken'
+  /users:
+    get:
+      $ref: '#/components/routes/users/GetAll'
+    post:
+      $ref: '#/components/routes/users/Signup'
+  /users/invalidateToken:
+    post:
+      $ref: '#/components/routes/users/InvalidateToken'
+  /users/me/orders:
+    get:
+      $ref: '#/components/routes/orders/GetUserOrders'
+  /users/{userId}:
+    get:
+      $ref: '#/components/routes/users/GetOne'
+    patch:
+      $ref: '#/components/routes/users/EditOne'
+    delete:
+      $ref: '#/components/routes/users/DeleteOne'
+  /stores:
+    get:
+      $ref: '#/components/routes/stores/GetAll'
+    post:
+      $ref: '#/components/routes/stores/Add'
+  /stores/{storeId}:
+    get:
+      $ref: '#/components/routes/stores/GetOne'
+    delete:
+      $ref: '#/components/routes/stores/DeleteOne'
+    patch:
+      $ref: '#/components/routes/stores/EditOne'
+  /stores/{storeId}/products:
+    get:
+      $ref: '#/components/routes/stores/GetStoreProducts'
+    post:
+      $ref: '#/components/routes/stores/AddProductToStore'
+  /stores/{storeId}/products/{productId}:
+    delete:
+      $ref: '#/components/routes/stores/DeleteStoreProduct'
+  /products:
+    get:
+      $ref: '#/components/routes/products/GetAll'
+  /products/{productId}:
+    get:
+      $ref: '#/components/routes/products/GetOne'
+    delete:
+      $ref: '#/components/routes/products/DeleteOne'
+    patch:
+      $ref: '#/components/routes/products/EditOne'
+  /products/{productId}/reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetProductReviews'
+  /reviews:
+    get:
+      $ref: '#/components/routes/reviews/GetAll'
+    post:
+      $ref: '#/components/routes/reviews/Add'
+  /reviews/{reviewId}:
+    get:
+      $ref: '#/components/routes/reviews/GetOne'
+    delete:
+      $ref: '#/components/routes/reviews/DeleteOne'
+    patch:
+      $ref: '#/components/routes/reviews/EditOne'
+  /orders:
+    get:
+      $ref: '#/components/routes/orders/GetAll'
+    post:
+      $ref: '#/components/routes/orders/Add'
+  /orders/{orderId}:
+    get:
+      $ref: '#/components/routes/orders/GetOne'
+    patch:
+      $ref: '#/components/routes/orders/EditOne'
+    delete:
+      $ref: '#/components/routes/orders/DeleteOne'

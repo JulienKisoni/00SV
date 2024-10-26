@@ -3,6 +3,14 @@ info:
   title: Store Manager Rest API
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Bearer
+security:
+  - bearerAuth: []
 paths:
   /auth/login:
     post:
