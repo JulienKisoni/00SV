@@ -1,8 +1,6 @@
 components:
   routes:
     GetAll:
-      tags:
-        - Reviews
       summary: Get list of all reviews
       responses:
         '200':
@@ -27,9 +25,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetProductReviews:
-      tags:
-        - Reviews
-        - Products
       summary: Get all reviews of a given product
       parameters:
         - name: productId
@@ -61,8 +56,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetOne:
-      tags:
-        - Reviews
       summary: Get one review by ID
       parameters:
         - name: reviewId
@@ -92,8 +85,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     DeleteOne:
-      tags:
-        - Reviews
       summary: Delete one review by ID
       parameters:
         - name: reviewId
@@ -120,8 +111,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     EditOne:
-      tags:
-        - Reviews
       summary: Edit one review by ID
       parameters:
         - name: reviewId
@@ -171,8 +160,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     Add:
-      tags:
-        - Reviews
       summary: Add a review to a product
       requestBody:
         required: true

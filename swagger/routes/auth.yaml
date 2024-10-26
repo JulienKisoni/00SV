@@ -1,8 +1,6 @@
 components:
   routes:
     Login:
-      tags:
-        - Auth
       summary: Login and get back access and refresh tokens
       requestBody:
         required: true
@@ -49,8 +47,6 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     RefreshToken:
-      tags:
-        - Auth
       summary: Refresh your expired access token
       requestBody:
         required: true

@@ -3,6 +3,21 @@ info:
   title: Store Manager Rest API
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
+servers:
+  - url: http://localhost:8000/
+tags:
+  - name: Auth
+    description: Authentication & Authorization endpoints
+  - name: Users
+    description: Users CRUD operations
+  - name: Stores
+    description: Stores CRUD operations
+  - name: Products
+    description: Products CRUD operations
+  - name: Reviews
+    description: Reviews CRUD operations
+  - name: Orders
+    description: Orders CRUD operations
 components:
   securitySchemes:
     bearerAuth:
@@ -12,8 +27,6 @@ components:
   routes:
     auth:
       Login:
-        tags:
-          - Auth
         summary: Login and get back access and refresh tokens
         requestBody:
           required: true
@@ -62,8 +75,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       RefreshToken:
-        tags:
-          - Auth
         summary: Refresh your expired access token
         requestBody:
           required: true
@@ -103,8 +114,6 @@ components:
             $ref: '#/components/errors/SthWentWrong'
     orders:
       GetAll:
-        tags:
-          - Orders
         summary: Get list of all orders
         responses:
           '200':
@@ -129,9 +138,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetUserOrders:
-        tags:
-          - Orders
-          - Users
         summary: Get all orders of the current connected user
         responses:
           '200':
@@ -156,8 +162,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetOne:
-        tags:
-          - Orders
         summary: Get one order by ID
         parameters:
           - name: orderId
@@ -187,8 +191,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteOne:
-        tags:
-          - Orders
         summary: Delete one order by ID
         parameters:
           - name: orderId
@@ -215,8 +217,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       EditOne:
-        tags:
-          - Orders
         summary: Edit one order by ID
         parameters:
           - name: orderId
@@ -271,8 +271,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       Add:
-        tags:
-          - Orders
         summary: Order product(s)
         requestBody:
           required: true
@@ -320,8 +318,6 @@ components:
             $ref: '#/components/errors/SthWentWrong'
     products:
       GetAll:
-        tags:
-          - Products
         summary: Get list of all products
         responses:
           '200':
@@ -346,8 +342,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetOne:
-        tags:
-          - Products
         summary: Get one product by ID
         parameters:
           - name: productId
@@ -377,8 +371,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteOne:
-        tags:
-          - Products
         summary: Delete one product by ID
         parameters:
           - name: productId
@@ -405,8 +397,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       EditOne:
-        tags:
-          - Products
         summary: Edit one product by ID
         parameters:
           - name: productId
@@ -467,8 +457,6 @@ components:
             $ref: '#/components/errors/SthWentWrong'
     reviews:
       GetAll:
-        tags:
-          - Reviews
         summary: Get list of all reviews
         responses:
           '200':
@@ -493,9 +481,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetProductReviews:
-        tags:
-          - Reviews
-          - Products
         summary: Get all reviews of a given product
         parameters:
           - name: productId
@@ -527,8 +512,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetOne:
-        tags:
-          - Reviews
         summary: Get one review by ID
         parameters:
           - name: reviewId
@@ -558,8 +541,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteOne:
-        tags:
-          - Reviews
         summary: Delete one review by ID
         parameters:
           - name: reviewId
@@ -586,8 +567,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       EditOne:
-        tags:
-          - Reviews
         summary: Edit one review by ID
         parameters:
           - name: reviewId
@@ -637,8 +616,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       Add:
-        tags:
-          - Reviews
         summary: Add a review to a product
         requestBody:
           required: true
@@ -695,8 +672,6 @@ components:
             $ref: '#/components/errors/SthWentWrong'
     stores:
       GetAll:
-        tags:
-          - Stores
         summary: Get list of all stores
         responses:
           '200':
@@ -721,8 +696,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetOne:
-        tags:
-          - Stores
         summary: Get one store by ID
         parameters:
           - name: storeId
@@ -752,8 +725,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteOne:
-        tags:
-          - Stores
         summary: Delete one store by ID
         parameters:
           - name: storeId
@@ -780,8 +751,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       Add:
-        tags:
-          - Stores
         summary: Create one store for the current connected user
         requestBody:
           required: true
@@ -831,8 +800,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       EditOne:
-        tags:
-          - Stores
         summary: Edit one store by ID
         parameters:
           - name: storeId
@@ -881,9 +848,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetStoreProducts:
-        tags:
-          - Stores
-          - Products
         summary: Get list of all products of a given store
         parameters:
           - name: storeId
@@ -915,9 +879,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteStoreProduct:
-        tags:
-          - Stores
-          - Products
         summary: Delete one product from store
         parameters:
           - name: productId
@@ -950,9 +911,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       AddProductToStore:
-        tags:
-          - Stores
-          - Products
         summary: Add one product to a given store
         parameters:
           - name: storeId
@@ -1024,8 +982,6 @@ components:
             $ref: '#/components/errors/SthWentWrong'
     users:
       GetAll:
-        tags:
-          - Users
         summary: Get list of all users
         responses:
           '200':
@@ -1050,8 +1006,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       GetOne:
-        tags:
-          - Users
         summary: Get one user by ID
         parameters:
           - name: userId
@@ -1081,9 +1035,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       Signup:
-        tags:
-          - Users
-          - Auth
         summary: Create a user
         requestBody:
           required: true
@@ -1140,9 +1091,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       InvalidateToken:
-        tags:
-          - Users
-          - Auth
         summary: Allow an admin user to invalidate the token of a given user
         requestBody:
           required: true
@@ -1174,8 +1122,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       DeleteOne:
-        tags:
-          - Users
         summary: Delete one user by ID
         parameters:
           - name: userId
@@ -1202,8 +1148,6 @@ components:
           '500':
             $ref: '#/components/errors/SthWentWrong'
       EditOne:
-        tags:
-          - Users
         summary: Edit one user by ID
         parameters:
           - name: userId
@@ -1809,82 +1753,153 @@ security:
 paths:
   /auth/login:
     post:
+      tags:
+        - Auth
       $ref: '#/components/routes/auth/Login'
   /auth/refreshToken:
     post:
+      tags:
+        - Auth
       $ref: '#/components/routes/auth/RefreshToken'
   /users:
     get:
+      tags:
+        - Users
       $ref: '#/components/routes/users/GetAll'
     post:
+      tags:
+        - Users
+        - Auth
       $ref: '#/components/routes/users/Signup'
   /users/invalidateToken:
     post:
+      tags:
+        - Users
+        - Auth
       $ref: '#/components/routes/users/InvalidateToken'
   /users/me/orders:
     get:
+      tags:
+        - Orders
+        - Users
       $ref: '#/components/routes/orders/GetUserOrders'
   /users/{userId}:
     get:
+      tags:
+        - Users
       $ref: '#/components/routes/users/GetOne'
     patch:
+      tags:
+        - Users
       $ref: '#/components/routes/users/EditOne'
     delete:
+      tags:
+        - Users
       $ref: '#/components/routes/users/DeleteOne'
   /stores:
     get:
+      tags:
+        - Stores
       $ref: '#/components/routes/stores/GetAll'
     post:
+      tags:
+        - Stores
       $ref: '#/components/routes/stores/Add'
   /stores/{storeId}:
     get:
+      tags:
+        - Stores
       $ref: '#/components/routes/stores/GetOne'
     delete:
+      tags:
+        - Stores
       $ref: '#/components/routes/stores/DeleteOne'
     patch:
+      tags:
+        - Stores
       $ref: '#/components/routes/stores/EditOne'
   /stores/{storeId}/products:
     get:
+      tags:
+        - Stores
+        - Products
       $ref: '#/components/routes/stores/GetStoreProducts'
     post:
+      tags:
+        - Stores
+        - Products
       $ref: '#/components/routes/stores/AddProductToStore'
   /stores/{storeId}/products/{productId}:
     delete:
+      tags:
+        - Stores
+        - Products
       $ref: '#/components/routes/stores/DeleteStoreProduct'
   /products:
     get:
+      tags:
+        - Products
       $ref: '#/components/routes/products/GetAll'
   /products/{productId}:
     get:
+      tags:
+        - Products
       $ref: '#/components/routes/products/GetOne'
     delete:
+      tags:
+        - Products
       $ref: '#/components/routes/products/DeleteOne'
     patch:
+      tags:
+        - Products
       $ref: '#/components/routes/products/EditOne'
   /products/{productId}/reviews:
     get:
+      tags:
+        - Reviews
+        - Products
       $ref: '#/components/routes/reviews/GetProductReviews'
   /reviews:
     get:
+      tags:
+        - Reviews
       $ref: '#/components/routes/reviews/GetAll'
     post:
+      tags:
+        - Reviews
       $ref: '#/components/routes/reviews/Add'
   /reviews/{reviewId}:
     get:
+      tags:
+        - Reviews
       $ref: '#/components/routes/reviews/GetOne'
     delete:
+      tags:
+        - Reviews
       $ref: '#/components/routes/reviews/DeleteOne'
     patch:
+      tags:
+        - Reviews
       $ref: '#/components/routes/reviews/EditOne'
   /orders:
     get:
+      tags:
+        - Orders
       $ref: '#/components/routes/orders/GetAll'
     post:
+      tags:
+        - Orders
       $ref: '#/components/routes/orders/Add'
   /orders/{orderId}:
     get:
+      tags:
+        - Orders
       $ref: '#/components/routes/orders/GetOne'
     patch:
+      tags:
+        - Orders
       $ref: '#/components/routes/orders/EditOne'
     delete:
+      tags:
+        - Orders
       $ref: '#/components/routes/orders/DeleteOne'
