@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Review title #1",
+    "content": "Review content #1",
+    "stars": 3
+  },
+  {
+    "title": "Review title #2",
+    "content": "Review content #2",
+    "stars": 4
+  }
+]

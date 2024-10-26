@@ -1,13 +1,14 @@
 [
   {
-    "_id": "67072ccf955c650cf5387524",
     "username": "julien",
+    "password": "julien",
     "email": "julien@mail.com",
-    "createdAt": "2024-10-10T01:24:31.785Z",
-    "updatedAt": "2024-10-23T23:37:58.707Z",
-    "profile": {
-      "role": "user"
-    },
-    "storeIds": ["670f198f1fc4fdd76bd0236c"]
+    "role": "user"
+  },
+  {
+    "username": "julien+admin",
+    "password": "julien+admin",
+    "email": "julien+admin@mail.com",
+    "role": "admin"
   }
 ]

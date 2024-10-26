@@ -286,8 +286,8 @@ components:
                   required: true
                 description:
                   type: string
-                  description: Store description
-                  example: Store description
+                  description: Product description
+                  example: Product description
                   required: true
                   minimum: 12
                   maximum: 100

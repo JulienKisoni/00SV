@@ -1,19 +1,12 @@
 [
   {
-    "_id": "670f198f1fc4fdd76bd0AAAA",
     "name": "Store name #1",
-    "owner": "670f198f1fc4fdd76bd0AAAA",
-    "products": [
-      "670f198f1fc4fdd76bd0AAAA",
-      "670f198f1fc4fdd76bd0AAAA",
-      "670f198f1fc4fdd76bd0AAAA",
-      "670f198f1fc4fdd76bd0AAAA",
-      "670f198f1fc4fdd76bd0AAAA",
-      "670f198f1fc4fdd76bd0AAAA"
-    ],
     "description": "Store description #1",
-    "active": true,
-    "updatedAt": "2024-10-19T17:30:37.831Z",
-    "createdAt": "2024-10-19T17:30:37.831Z"
+    "active": true
+  },
+  {
+    "name": "Store name #2",
+    "description": "Store description #2",
+    "active": false
   }
 ]
