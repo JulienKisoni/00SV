@@ -4,6 +4,9 @@ info:
   description: Endpoints documentation for Store Manager Rest API
   version: 1.0.0
 paths:
+  /users/me/orders:
+    get:
+      $ref: '#/components/routes/orders/GetUserOrders'
   /stores:
     get:
       $ref: '#/components/routes/stores/GetAll'

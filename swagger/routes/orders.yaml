@@ -26,6 +26,33 @@ components:
           $ref: '#/components/errors/NotFound'
         '500':
           $ref: '#/components/errors/SthWentWrong'
+    GetUserOrders:
+      tags:
+        - Orders
+        - Users
+      summary: Get all orders of the current connected user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderDoc'
+        '400':
+          $ref: '#/components/errors/BadRequest'
+        '401':
+          $ref: '#/components/errors/Unauthorized'
+        '403':
+          $ref: '#/components/errors/Forbidden'
+        '404':
+          $ref: '#/components/errors/NotFound'
+        '500':
+          $ref: '#/components/errors/SthWentWrong'
     GetOne:
       tags:
         - Orders
