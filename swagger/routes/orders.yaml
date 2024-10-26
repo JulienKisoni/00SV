@@ -1,6 +1,8 @@
 components:
   routes:
     GetAll:
+      tags:
+        - Orders
       summary: Get list of all orders
       responses:
         '200':
@@ -25,6 +27,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetUserOrders:
+      tags:
+        - Orders
+        - Users
       summary: Get all orders of the current connected user
       responses:
         '200':
@@ -49,6 +54,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetOne:
+      tags:
+        - Orders
       summary: Get one order by ID
       parameters:
         - name: orderId
@@ -78,6 +85,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     DeleteOne:
+      tags:
+        - Orders
       summary: Delete one order by ID
       parameters:
         - name: orderId
@@ -104,6 +113,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     EditOne:
+      tags:
+        - Orders
       summary: Edit one order by ID
       parameters:
         - name: orderId
@@ -158,6 +169,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     Add:
+      tags:
+        - Orders
       summary: Order product(s)
       requestBody:
         required: true

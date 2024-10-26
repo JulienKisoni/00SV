@@ -1,6 +1,8 @@
 components:
   routes:
     GetAll:
+      tags:
+        - Stores
       summary: Get list of all stores
       responses:
         '200':
@@ -25,6 +27,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetOne:
+      tags:
+        - Stores
       summary: Get one store by ID
       parameters:
         - name: storeId
@@ -54,6 +58,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     DeleteOne:
+      tags:
+        - Stores
       summary: Delete one store by ID
       parameters:
         - name: storeId
@@ -80,6 +86,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     Add:
+      tags:
+        - Stores
       summary: Create one store for the current connected user
       requestBody:
         required: true
@@ -129,6 +137,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     EditOne:
+      tags:
+        - Stores
       summary: Edit one store by ID
       parameters:
         - name: storeId
@@ -177,6 +187,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetStoreProducts:
+      tags:
+        - Stores
+        - Products
       summary: Get list of all products of a given store
       parameters:
         - name: storeId
@@ -208,6 +221,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     DeleteStoreProduct:
+      tags:
+        - Stores
+        - Products
       summary: Delete one product from store
       parameters:
         - name: productId
@@ -240,6 +256,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     AddProductToStore:
+      tags:
+        - Stores
+        - Products
       summary: Add one product to a given store
       parameters:
         - name: storeId

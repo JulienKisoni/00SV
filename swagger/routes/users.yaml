@@ -1,6 +1,8 @@
 components:
   routes:
     GetAll:
+      tags:
+        - Users
       summary: Get list of all users
       responses:
         '200':
@@ -25,6 +27,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     GetOne:
+      tags:
+        - Users
       summary: Get one user by ID
       parameters:
         - name: userId
@@ -54,6 +58,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     Signup:
+      tags:
+        - Users
+        - Auth
       summary: Create a user
       requestBody:
         required: true
@@ -110,6 +117,9 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     InvalidateToken:
+      tags:
+        - Users
+        - Auth
       summary: Allow an admin user to invalidate the token of a given user
       requestBody:
         required: true
@@ -141,6 +151,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     DeleteOne:
+      tags:
+        - Users
       summary: Delete one user by ID
       parameters:
         - name: userId
@@ -167,6 +179,8 @@ components:
         '500':
           $ref: '#/components/errors/SthWentWrong'
     EditOne:
+      tags:
+        - Users
       summary: Edit one user by ID
       parameters:
         - name: userId
