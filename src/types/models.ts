@@ -31,7 +31,7 @@ export interface IUserDocument extends Timestamps {
   private?: {
     invalidToken: ExpToken;
   };
-  __v: number;
+  __v?: number;
 }
 
 export interface IStoreDocument extends Timestamps {
@@ -42,7 +42,7 @@ export interface IStoreDocument extends Timestamps {
   products: (string | Schema.Types.ObjectId)[];
   description: string;
   active: boolean;
-  __v: number;
+  __v?: number;
 }
 
 export interface IProductDocument extends Timestamps {

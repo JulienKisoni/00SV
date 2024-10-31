@@ -1,5 +1,8 @@
 import { connection } from 'mongoose';
 
+import { injectUsers } from './users';
+import { injectStores } from './stores';
+
 interface DeleteResult {
   acknowledged: boolean;
   deletedCount: number;
@@ -37,10 +40,12 @@ export const clearDatabase = async () => {
   console.log('Database cleared successfully');
 };
 
-export const seedDatabase = () => {};
+export const seedDatabase = async () => {
+  await clearDatabase();
+  const users = await injectUsers();
+  await injectStores(users[0]);
+};
 
-export const injectUsers = () => {};
-export const injectStores = () => {};
 export const injectProducts = () => {};
 export const injectReviews = () => {};
 export const injectOrders = () => {};

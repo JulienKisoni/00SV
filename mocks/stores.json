@@ -2,11 +2,13 @@
   {
     "name": "Store name #1",
     "description": "Store description #1",
-    "active": true
+    "active": true,
+    "owner": ""
   },
   {
     "name": "Store name #2",
     "description": "Store description #2",
-    "active": false
+    "active": false,
+    "owner": ""
   }
 ]

@@ -8,6 +8,7 @@ import http from 'http';
 import { connect } from 'mongoose';
 
 import { app } from './app';
+import { seedDatabase } from '../__test__/helpers/index';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -58,6 +59,9 @@ const init = async () => {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
+    if (process.env.TEST_ENABLED === 'true') {
+      seedDatabase();
+    }
   } catch (error) {
     console.error(error);
   }
