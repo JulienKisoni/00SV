@@ -86,7 +86,7 @@ export interface IReviewDocument extends Timestamps {
   productDetails?: Partial<IProductDocument>;
   owner: string | Schema.Types.ObjectId;
   ownerDetails?: Partial<IUserDocument>;
-  __v: number;
+  __v?: number;
 }
 
 export interface CartItem {

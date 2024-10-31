@@ -1,5 +1,5 @@
 import { model, Model, Schema } from 'mongoose';
-import { IProductDocument } from 'src/types/models';
+import { IProductDocument } from '../types/models';
 
 type IProductSchema = Omit<IProductDocument, 'reviewDetails'>;
 export interface IProductMethods extends IProductDocument {
