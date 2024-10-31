@@ -40,7 +40,7 @@ interface CalculatePriceArgs {
   items: CartItem[];
   products: IProductDocument[];
 }
-const calculateTotalPrice = (params: CalculatePriceArgs): number => {
+export const calculateTotalPrice = (params: CalculatePriceArgs): number => {
   const { items, products } = params;
   const cartItems: { unitPrice: number; quantity: number }[] = [];
   products.forEach((product) => {
@@ -58,7 +58,7 @@ const calculateTotalPrice = (params: CalculatePriceArgs): number => {
   return totalPrice;
 };
 
-const generateOrderNumber = (): string => {
+export const generateOrderNumber = (): string => {
   const date = new Date();
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0');

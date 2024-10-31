@@ -96,7 +96,7 @@ export interface CartItem {
 }
 
 export interface IOrderDocument extends Timestamps {
-  __v: number;
+  __v?: number;
   _id: string | Schema.Types.ObjectId;
   items: CartItem[];
   owner: string | Schema.Types.ObjectId;

@@ -5,6 +5,7 @@ import { injectStores } from './stores';
 import { injectProducts } from './products';
 import { IProductMethods } from '../../src/models/product';
 import { injectReviews } from './reviews';
+import { injectOrders } from './orders';
 
 interface DeleteResult {
   acknowledged: boolean;
@@ -55,5 +56,9 @@ export const seedDatabase = async () => {
   const product = products[0];
   if (product) {
     await injectReviews(product, user);
+  }
+  const _products = products.filter((product) => product !== undefined);
+  if (_products.length) {
+    await injectOrders(_products, user);
   }
 };

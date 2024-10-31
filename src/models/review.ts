@@ -1,5 +1,5 @@
 import { Model, Schema, model } from 'mongoose';
-import { IReviewDocument } from 'src/types/models';
+import { IReviewDocument } from '../types/models';
 
 type ReviewSchema = Omit<IReviewDocument, 'productDetails' | 'ownerDetails'>;
 interface IReviewMethods extends ReviewSchema {}
