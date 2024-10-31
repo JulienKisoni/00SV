@@ -1,5 +1,5 @@
 import { Model, Schema, UpdateQuery, UpdateWriteOpResult, model } from 'mongoose';
-import { IStoreDocument } from 'src/types/models';
+import { IStoreDocument } from '../types/models';
 
 type IStoreSchema = Omit<IStoreDocument, 'ownerDetails'>;
 export interface IStoreMethods extends IStoreDocument {

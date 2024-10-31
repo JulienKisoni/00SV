@@ -5,7 +5,9 @@
     "description": "Product description #1",
     "minQuantity": 3,
     "active": true,
-    "unitPrice": 100
+    "unitPrice": 100,
+    "storeId": "",
+    "owner": ""
   },
   {
     "name": "Product name #2",
@@ -13,6 +15,8 @@
     "description": "Product description #2",
     "minQuantity": 3,
     "active": true,
-    "unitPrice": 100
+    "unitPrice": 100,
+    "storeId": "",
+    "owner": ""
   }
 ]

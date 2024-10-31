@@ -2,6 +2,7 @@ import { connection } from 'mongoose';
 
 import { injectUsers } from './users';
 import { injectStores } from './stores';
+import { injectProducts } from './products';
 
 interface DeleteResult {
   acknowledged: boolean;
@@ -43,9 +44,8 @@ export const clearDatabase = async () => {
 export const seedDatabase = async () => {
   await clearDatabase();
   const users = await injectUsers();
-  await injectStores(users[0]);
+  const stores = await injectStores(users[0]);
+  if (stores[0]) {
+    await injectProducts(stores[0]);
+  }
 };
-
-export const injectProducts = () => {};
-export const injectReviews = () => {};
-export const injectOrders = () => {};
