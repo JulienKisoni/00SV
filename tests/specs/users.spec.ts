@@ -47,7 +47,7 @@ describe('USERS', () => {
     });
   });
 
-  describe('[GET] /users/:userId', () => {
+  describe('[GET] /users/:{userId}', () => {
     const invalidUrl = `${baseURL}/${invalidMongoId}`;
 
     it('[401] Should fail: Unauthorized', async () => {
@@ -116,7 +116,7 @@ describe('USERS', () => {
     });
   });
 
-  describe('[PATCH] /users/:userId', () => {
+  describe('[PATCH] /users/:{userId}', () => {
     const validBody = {
       profile: {
         role: 'admin',
@@ -148,7 +148,7 @@ describe('USERS', () => {
     });
   });
 
-  describe('[DELETE] /users/:userId', () => {
+  describe('[DELETE] /users/:{userId}', () => {
     it('[401] Should fail: Unauthorized', async () => {
       const url = `${baseURL}/${user?._id}`;
       request(app).delete(url).expect(401);

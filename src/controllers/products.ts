@@ -69,7 +69,7 @@ export const addProduct = async (req: ExtendedRequest<AddProductBody>, res: Resp
   if (_error) {
     return handleError({ error: _error, next });
   }
-  res.status(HTTP_STATUS_CODES.OK).json(data);
+  res.status(HTTP_STATUS_CODES.CREATED).json(data);
 };
 
 export const getAllProducts = async (_req: Request, res: Response, _next: NextFunction) => {
