@@ -33,7 +33,7 @@ export const startServer = async (port: string, app: Application) => {
   if (process.env.TEST_ENABLED && process.env.TEST_ENABLED === 'true') {
     DATABASE_NAME = process.env.DATABASE_TEST_NAME;
   }
-  const errMsg = `Could not connect to DB ${DATABASE_NAME}`;
+  const errMsg = 'Could not connect to DB';
   if (!DATABASE_URI || !DATABASE_NAME) {
     console.error(errMsg, DATABASE_NAME, DATABASE_URI);
     process.exit(1);

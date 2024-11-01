@@ -40,12 +40,9 @@ export const clearDatabase = async () => {
   */
 
   await Promise.all(promises);
-
-  console.log('Database cleared successfully');
 };
 
 export const seedDatabase = async () => {
-  console.log('Seed database started');
   await clearDatabase();
   const users = await injectUsers();
   const user = users[0];
@@ -62,5 +59,4 @@ export const seedDatabase = async () => {
   if (_products.length) {
     await injectOrders(_products, user);
   }
-  console.log('Seed database Done');
 };

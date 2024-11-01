@@ -1,3 +1,5 @@
+/// <reference path="../../src/types/types.d.ts" />
+
 import request from 'supertest';
 
 import { app } from '../../src/app';
@@ -18,7 +20,10 @@ describe('USERS', () => {
     let url = `${baseURL}/users`;
 
     it('Should fail get users', () => {
-      request(app).get(url).expect(401);
+      console.log({ url });
+      const res = request(app).get(url).expect(401);
+      console.log('error ', res);
+      // console.log('body ', res.body);
     });
   });
 });
