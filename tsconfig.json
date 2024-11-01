@@ -21,8 +21,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
+    "baseUrl": "."
   },
-  "exclude": ["node_modules"],
-  "include": ["./src/**/*.ts"]
+  "exclude": ["node_modules", "mocks", ".vscode"],
+  "include": ["./src/**/*.ts", "./swagger/**/*.ts", "tests/**/*.ts"]
 }

@@ -8,7 +8,6 @@ type CreateOrderDoc = Omit<IOrderDocument, '_id' | 'createdAt' | 'updatedAt'>;
 
 export const injectOrders = async (products: IProductMethods[], user: IUserDocument) => {
   const orders = await createOrders(products, user);
-  console.log('Orders injected');
   return orders;
 };
 

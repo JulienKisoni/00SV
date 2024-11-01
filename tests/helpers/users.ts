@@ -7,7 +7,6 @@ type CreateUserDoc = Omit<IUserMethods, '_id' | 'createdAt' | 'updatedAt'>;
 
 export const injectUsers = async () => {
   const users = await createUsers();
-  console.log('Users injected ');
   return users;
 };
 

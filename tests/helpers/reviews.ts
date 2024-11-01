@@ -7,7 +7,6 @@ type CreateReviewDoc = Omit<IReviewDocument, '_id' | 'createdAt' | 'updatedAt'>;
 
 export const injectReviews = async (product: IProductMethods, user: IUserDocument) => {
   const reviews = await createProductReviews(product, user);
-  console.log('Reviews injected ');
   return reviews;
 };
 

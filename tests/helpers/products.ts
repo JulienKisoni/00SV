@@ -7,7 +7,6 @@ type CreateProductDoc = Omit<IProductDocument, '_id' | 'createdAt' | 'updatedAt'
 
 export const injectProducts = async (store: IStoreMethods) => {
   const products = await createStoreProducts(store);
-  console.log('Products injected ');
   return products;
 };
 

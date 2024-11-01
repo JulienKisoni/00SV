@@ -9,7 +9,6 @@ import router from './routes/index';
 import { errorHandler } from './middlewares/errors';
 import { generateSwaggerDoc } from '../swagger';
 
-const swaggerDoc = generateSwaggerDoc();
 const app: express.Application = express();
 
 app.use(httpLogger);
@@ -17,7 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+const swaggerDoc = generateSwaggerDoc();
 app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
 app.use(validateToken);
 app.use('/', router);
 
