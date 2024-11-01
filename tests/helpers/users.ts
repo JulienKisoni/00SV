@@ -1,11 +1,12 @@
-import { USER_ROLES } from '../../src/types/models';
+import { IUserDocument, USER_ROLES } from '../../src/types/models';
 import DummyUsers from '../../mocks/users.json';
 import { IUserMethods, UserModel } from '../../src/models/user';
 import { encrypt } from '../../src/utils/hash';
+import * as authBusiness from '../../src/business/auth';
 
 type CreateUserDoc = Omit<IUserMethods, '_id' | 'createdAt' | 'updatedAt'>;
 
-export const injectUsers = async () => {
+export const injectUsers = async (): Promise<(IUserDocument | undefined)[]> => {
   const users = await createUsers();
   return users;
 };
@@ -30,7 +31,21 @@ export const createUsers = async () => {
 export const createUser = async (doc: CreateUserDoc) => {
   const { password } = doc;
   const { encryptedText } = await encrypt({ plainText: password });
-  doc.password === encryptedText;
+  if (!encryptedText) {
+    return undefined;
+  }
+  doc.password = encryptedText;
   const user = await UserModel.create(doc);
   return user;
+};
+
+interface ILoginArgs {
+  email: string;
+  password: string;
+}
+
+export const login = async (args?: ILoginArgs) => {
+  const { email = 'julien@mail.com', password = 'julien' } = args || {};
+  const { tokens } = await authBusiness.login({ email, password });
+  return tokens;
 };

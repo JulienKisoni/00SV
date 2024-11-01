@@ -106,3 +106,8 @@ export interface IOrderDocument extends Timestamps {
 }
 
 export type RetreiveOneFilters<T> = RootFilterQuery<T>;
+
+export interface ITestUser {
+  tokens?: API_TYPES.Tokens;
+  token?: string;
+}

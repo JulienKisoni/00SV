@@ -6,6 +6,7 @@ import { injectProducts } from './products';
 import { IProductMethods } from '../../src/models/product';
 import { injectReviews } from './reviews';
 import { injectOrders } from './orders';
+import { IOrderDocument, IProductDocument, IReviewDocument, IStoreDocument, IUserDocument } from '../../src/types/models';
 
 interface DeleteResult {
   acknowledged: boolean;
@@ -24,39 +25,51 @@ export const clearDatabase = async () => {
     }
   }
 
-  /* 
-    I can use classes to avoid test repetition
-    1. Validation Class
-    const validation = new Validation(data, function);
-    validation.validateResponse
-
-    2. TestCase class
-    const test case = new TestCase(request, ect...);
-
-    testCase.runWithSuccess('');
-
-    testCase.runWithFailure
-  
-  */
-
   await Promise.all(promises);
 };
 
-export const seedDatabase = async () => {
+interface ISeedReturn {
+  user: IUserDocument | undefined;
+  store: IStoreDocument | undefined;
+  product: IProductDocument | undefined;
+  review: IReviewDocument | undefined;
+  order: IOrderDocument | undefined;
+}
+export const seedDatabase = async (): Promise<ISeedReturn> => {
+  let user: IUserDocument | undefined;
+  let store: IStoreDocument | undefined;
+  let product: IProductDocument | undefined;
+  let review: IReviewDocument | undefined;
+  let order: IOrderDocument | undefined;
   await clearDatabase();
   const users = await injectUsers();
-  const user = users[0];
-  const stores = await injectStores(user);
-  let products: (IProductMethods | undefined)[] = [];
-  if (stores[0]) {
-    products = await injectProducts(stores[0]);
+  user = users[0];
+  if (user) {
+    const stores = await injectStores(user);
+    store = stores[0];
+    let products: (IProductMethods | undefined)[] = [];
+    if (store) {
+      products = await injectProducts(store);
+    }
+    product = products[0];
+    if (product) {
+      const reviews = await injectReviews(product, user);
+      review = reviews[0];
+    }
+    const _products = products.filter((product) => product !== undefined);
+    if (_products.length) {
+      const orders = await injectOrders(_products, user);
+      order = orders[0];
+    }
   }
-  const product = products[0];
-  if (product) {
-    await injectReviews(product, user);
-  }
-  const _products = products.filter((product) => product !== undefined);
-  if (_products.length) {
-    await injectOrders(_products, user);
-  }
+  return { user, store, product, review, order };
+};
+
+export const CONSTANTS = {
+  nonExistingMongoId: '6722d6dfbc5a2a8e20daaaaa',
+  invalidMongoId: '6722d6dfbc5a',
+};
+
+export const failTest = () => {
+  throw new Error('Test failed');
 };

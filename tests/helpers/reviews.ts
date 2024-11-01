@@ -30,7 +30,7 @@ export const createReview = async ({ doc, product, user }: ICreateStore) => {
     doc.productId = product._id;
     const review = await ReviewModel.create(doc);
     await product.addReview(review._id.toString());
-    return product;
+    return review;
   } else {
     return undefined;
   }
