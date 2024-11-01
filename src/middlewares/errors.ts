@@ -22,7 +22,9 @@ export class GenericError extends Error {
 
 export const errorHandler = (error: GenericError, _req: Request, res: Response, _next: NextFunction) => {
   const { statusCode = HTTP_STATUS_CODES.STH_WENT_WRONG, message, publicMessage = 'Something went wrong', stack } = error;
-  console.error('**** Error Caught here ****** ', stack || message);
+  if (process.env.TEST_ENABLED !== 'true') {
+    console.error('**** Error Caught here ****** ', stack || message);
+  }
   res.status(statusCode).json({
     errors: [
       {

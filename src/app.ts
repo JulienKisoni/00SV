@@ -11,7 +11,10 @@ import { generateSwaggerDoc } from '../swagger';
 
 const app: express.Application = express();
 
-app.use(httpLogger);
+if (process.env.TEST_ENABLED !== 'true') {
+  app.use(httpLogger);
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

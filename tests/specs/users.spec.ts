@@ -1,12 +1,10 @@
-/// <reference path="../../src/types/types.d.ts" />
-
 import request from 'supertest';
 
 import { app } from '../../src/app';
 import { startServer } from '../../src/utils/server';
 import { clearDatabase, seedDatabase } from '../helpers';
 
-const baseURL = `http://locahlhost:8000`;
+const baseURL = '/users';
 
 describe('USERS', () => {
   before(async () => {
@@ -17,13 +15,11 @@ describe('USERS', () => {
     await clearDatabase();
   });
   describe('GET USERS', () => {
-    let url = `${baseURL}/users`;
+    let url = baseURL;
 
-    it('Should fail get users', () => {
-      console.log({ url });
-      const res = request(app).get(url).expect(401);
-      console.log('error ', res);
-      // console.log('body ', res.body);
+    it('Should fail get users', async () => {
+      const res = await request(app).get(url).expect(401);
+      console.log('body ', res.body);
     });
   });
 });
