@@ -1,31 +1,32 @@
-<h1 align="center">Nodejs-Express Typescript Boilerplate</h1>
+<h1 align="center">Data Exchange Service</h1>
 
 <p align="center">
-  <b>Build your web servers without spending hours on setting up the project.</b></br>
-  <sub>Made with ❤️ by <a href="https://github.com/abhijeetgurle">Abhijeet</a></sub>
+  <b>Rest API with Express.js and MongoDB.</b></br>
 </p>
 
 <br>
 
-## Why I Have Created This?
+## Prerequisites
 
-There are many boilerplates available on the internet which providers a server app with nodejs, express & typescript but I found them either too complex for my use case or too simple where I need to configure lot of features later. So I build this repo to be used in projects which are simple & doesn't require lot of unnecessary tooling.
+1. Use **Node** version 18 and **Yarn** version 1.22
+1. Environment variables can be found inside the `.env` file in the root folder
 
-<br>
+## How to run the server?
 
-## Features
+1. Install dependencies: `yarn install`
+1. Run MongoDB instance on PORT **27018**
+1. Make sure the **TEST_ENABLED** environment variable is equal to **false**
+1. Run Express server: `yarn dev`
+1. Your Express server will run and listen on PORT **8000**
 
-- **Simple Code** with no unnecessary dependencies.
-- **JSON & Cookie** parsing support with no need of configurations.
-- **Environment variables** can be easily added in file `.env` using library like [dotenv](https://www.npmjs.com/package/dotenv).
-- **Logging** support using libraries like [winston](https://www.npmjs.com/package/winston) & [morgan](https://www.npmjs.com/package/morgan)
-- **Prettier & ESlint** added so that your code looks & feels consistent.
+## How to access documentation?
 
-<br>
+After running your Express server, go to this url `http://localhost:8000/v1/api-docs/` to access **Swagger UI** Documentation of the Rest API
 
-## How To Use It
+## How to run tests?
 
-Download the zip file of this codebase & start writing your APIs 🎉.
+1. Change the **TEST_ENABLED** environment variable to **true**
+1. Run `yarn test`
 
 <br>
 
