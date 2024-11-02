@@ -7,19 +7,20 @@ import { startServer } from '../../src/utils/server';
 import { clearDatabase, CONSTANTS, seedDatabase } from '../helpers';
 import { IProductDocument, IReviewDocument, ITestUser } from '../../src/types/models';
 import { login } from '../helpers/users';
-import { validateReview } from './reviews.spec';
 
 const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 
-const baseURL = '/products';
+const baseURL = '/reviews';
 let testUser: ITestUser = {};
+let review: IReviewDocument | undefined;
 let product: IProductDocument | undefined;
 let server: Server | undefined;
 
-describe('PRODUCTS', () => {
+describe('REVIEWS', () => {
   before(async () => {
     server = await startServer('8000', app);
     const res = await seedDatabase();
+    review = res.review;
     product = res.product;
     const tokens = await login();
     if (tokens) {
@@ -35,7 +36,7 @@ describe('PRODUCTS', () => {
     }
   });
 
-  describe('[GET] /products', () => {
+  describe('[GET] /reviews', () => {
     let url = baseURL;
 
     it('[401] Should fail: Unauthorized', async () => {
@@ -45,18 +46,18 @@ describe('PRODUCTS', () => {
     it('[200] Should succeed: OK', async () => {
       const token = testUser.token || '';
       const res = await request(app).get(url).set('Authorization', token).expect(200);
-      const products = res.body.products as IProductDocument[];
-      products.forEach((store) => {
-        validateProduct(store);
+      const reviews = res.body.reviews as IReviewDocument[];
+      reviews.forEach((review) => {
+        validateReview(review);
       });
     });
   });
 
-  describe('[GET] /products/:{productId}', () => {
+  describe('[GET] /reviews/:{reviewId}', () => {
     const invalidUrl = `${baseURL}/${invalidMongoId}`;
 
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       request(app).get(url).expect(401);
     });
 
@@ -71,58 +72,64 @@ describe('PRODUCTS', () => {
     });
 
     it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       const token = testUser.token || '';
       const res = await request(app).get(url).set('Authorization', token).expect(200);
-      const productResponse = res.body.product as IProductDocument;
-      validateProduct(productResponse);
+      const reviewResponse = res.body.review as IReviewDocument;
+      validateReview(reviewResponse);
     });
   });
 
-  describe('[GET] /products/:{productId}/reviews', () => {
+  describe('[POST] /reviews', async () => {
+    const testUser2: ITestUser = {};
+    const tokens = await login();
+    if (tokens) {
+      testUser2.tokens = tokens;
+      testUser2.token = `Bearer ${tokens.accessToken}`;
+    }
+    const validBody = {
+      productId: product?._id,
+      title: 'Very good',
+      content: 'This is a good product',
+      stars: 5,
+    };
+    const invalidBody = { ...validBody };
+    invalidBody.content = '';
+
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${product?._id}/reviews`;
-      request(app).get(url).expect(401);
+      const url = `${baseURL}/reviews`;
+      request(app).post(url).expect(401);
     });
 
     it('[400] Should fail: Bad request', async () => {
-      const url = `${baseURL}/${invalidMongoId}/reviews`;
-      const token = testUser.token || '';
-      request(app).get(url).set('Authorization', token).expect(400);
+      const url = `${baseURL}/reviews`;
+      const token = testUser2.token || '';
+      request(app).post(url).set('Authorization', token).send(invalidBody).expect(400);
     });
 
-    it('[404] Should fail: Not found', async () => {
-      const url = `${baseURL}/${nonExistingMongoId}/reviews`;
-      const token = testUser.token || '';
-      request(app).get(url).set('Authorization', token).expect(404);
-    });
-
-    it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${product?._id}/reviews`;
-      const token = testUser.token || '';
-      const res = await request(app).get(url).set('Authorization', token).expect(200);
-      const reviews = res.body.reviews as IReviewDocument[];
-      reviews.forEach((review) => {
-        validateReview(review);
-      });
+    it('[201] Should succeed: OK', async () => {
+      const url = `${baseURL}/reviews`;
+      const token = testUser2.token || '';
+      const res = await request(app).post(url).set('Authorization', token).send(validBody).expect(201);
+      should(res.body).have.property('reviewId');
     });
   });
 
-  describe('[PATCH] /products/:{productId}', () => {
+  describe('[PATCH] /reviews/:{reviewId}', () => {
     const validBody = {
-      name: 'The new name',
+      title: 'The new title',
     };
     const invalidBody = {
-      name: '',
+      title: '',
     };
 
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       request(app).patch(url).expect(401);
     });
 
     it('[400] Should fail: Bad request', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       const token = testUser.token || '';
       request(app).patch(url).set('Authorization', token).send(invalidBody).expect(400);
     });
@@ -134,15 +141,15 @@ describe('PRODUCTS', () => {
     });
 
     it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       const token = testUser.token || '';
       request(app).patch(url).set('Authorization', token).send(validBody).expect(200);
     });
   });
 
-  describe('[DELETE] /products/:{productId}', () => {
+  describe('[DELETE] /reviews/:{reviewId}', () => {
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       request(app).delete(url).expect(401);
     });
 
@@ -159,23 +166,20 @@ describe('PRODUCTS', () => {
     });
 
     it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${product?._id}`;
+      const url = `${baseURL}/${review?._id}`;
       const token = testUser.token || '';
       request(app).delete(url).set('Authorization', token).expect(200);
     });
   });
 });
 
-export const validateProduct = (store: IProductDocument) => {
-  should(store).have.property('_id');
-  should(store).have.property('name');
-  should(store).have.property('quantity');
-  should(store).have.property('description');
-  should(store).have.property('minQuantity');
-  should(store).have.property('owner');
-  should(store).have.property('active');
-  should(store).have.property('unitPrice');
-  should(store).have.property('reviews');
-  should(store).have.property('createdAt');
-  should(store).have.property('updatedAt');
+export const validateReview = (review: IReviewDocument) => {
+  should(review).have.property('_id');
+  should(review).have.property('title');
+  should(review).have.property('content');
+  should(review).have.property('stars');
+  should(review).have.property('productId');
+  should(review).have.property('owner');
+  should(review).have.property('createdAt');
+  should(review).have.property('updatedAt');
 };
