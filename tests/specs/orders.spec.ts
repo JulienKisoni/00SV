@@ -5,22 +5,23 @@ import { type Server } from 'http';
 import { app } from '../../src/app';
 import { startServer } from '../../src/utils/server';
 import { clearDatabase, CONSTANTS, seedDatabase } from '../helpers';
-import { IOrderDocument, ITestUser, IUserDocument } from '../../src/types/models';
+import { IOrderDocument, IProductDocument, ITestUser } from '../../src/types/models';
 import { login } from '../helpers/users';
-import { validateOrder } from './orders.spec';
 
 const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 
-const baseURL = '/users';
+const baseURL = '/orders';
 let testUser: ITestUser = {};
-let user: IUserDocument | undefined;
+let order: IOrderDocument | undefined;
+let product: IProductDocument | undefined;
 let server: Server | undefined;
 
-describe('USERS', () => {
+describe('ORDERS', () => {
   before(async () => {
     server = await startServer('8000', app);
     const res = await seedDatabase();
-    user = res.user;
+    order = res.order;
+    product = res.product;
     const tokens = await login();
     if (tokens) {
       testUser.tokens = tokens;
@@ -30,57 +31,14 @@ describe('USERS', () => {
 
   after(async () => {
     await clearDatabase();
-    await clearDatabase();
     if (server) {
       server.close();
     }
   });
 
-  describe('[GET] /users', () => {
+  describe('[GET] /orders', () => {
     let url = baseURL;
 
-    it('[401] Should fail: Unauthorized', async () => {
-      request(app).get(url).expect(401);
-    });
-
-    it('[200] Should succeed: OK', async () => {
-      const token = testUser.token || '';
-      const res = await request(app).get(url).set('Authorization', token).expect(200);
-      const users = res.body.users as IUserDocument[];
-      users.forEach((user) => {
-        validateUser(user);
-      });
-    });
-  });
-
-  describe('[GET] /users/:{userId}', () => {
-    const invalidUrl = `${baseURL}/${invalidMongoId}`;
-
-    it('[401] Should fail: Unauthorized', async () => {
-      request(app).get(invalidUrl).expect(401);
-    });
-
-    it('[400] Should fail: Bad request', async () => {
-      const token = testUser.token || '';
-      request(app).get(`${baseURL}/${invalidMongoId}`).set('Authorization', token).expect(400);
-    });
-
-    it('[404] Should fail: Not found', async () => {
-      const token = testUser.token || '';
-      request(app).get(`${baseURL}/${nonExistingMongoId}`).set('Authorization', token).expect(404);
-    });
-
-    it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${user?._id}`;
-      const token = testUser.token || '';
-      const res = await request(app).get(url).set('Authorization', token).expect(200);
-      const userResponse = res.body.user as IUserDocument;
-      validateUser(userResponse);
-    });
-  });
-
-  describe('[GET] /users/me/orders', () => {
-    const url = `${baseURL}/me/orders`;
     it('[401] Should fail: Unauthorized', async () => {
       request(app).get(url).expect(401);
     });
@@ -95,48 +53,91 @@ describe('USERS', () => {
     });
   });
 
-  describe('[POST] /users/signup', () => {
-    const url = `${baseURL}/signup`;
-    const validBody = {
-      username: 'edouard',
-      email: 'edouard@mail.com',
-      password: 'edouard',
-      role: 'user',
-    };
-    const invalidBody = { ...validBody };
-    invalidBody.role = '';
+  describe('[GET] orders/:{orderId}', () => {
+    const invalidUrl = `${baseURL}/${invalidMongoId}`;
 
     it('[401] Should fail: Unauthorized', async () => {
+      const url = `${baseURL}/${order?._id}`;
+      request(app).get(url).expect(401);
+    });
+
+    it('[400] Should fail: Bad request', async () => {
+      const token = testUser.token || '';
+      request(app).get(invalidUrl).set('Authorization', token).expect(400);
+    });
+
+    it('[404] Should fail: Not found', async () => {
+      const token = testUser.token || '';
+      request(app).get(`${baseURL}/${nonExistingMongoId}`).set('Authorization', token).expect(404);
+    });
+
+    it('[200] Should succeed: OK', async () => {
+      const url = `${baseURL}/${order?._id}`;
+      const token = testUser.token || '';
+      const res = await request(app).get(url).set('Authorization', token).expect(200);
+      const orderResponse = res.body.order as IOrderDocument;
+      validateOrder(orderResponse);
+    });
+  });
+
+  describe('[POST] /orders', async () => {
+    const invalidBody = {
+      items: [
+        {
+          productId: invalidMongoId,
+        },
+      ],
+    };
+
+    it('[401] Should fail: Unauthorized', async () => {
+      const url = `${baseURL}`;
       request(app).post(url).expect(401);
     });
 
     it('[400] Should fail: Bad request', async () => {
+      const url = `${baseURL}`;
       const token = testUser.token || '';
       request(app).post(url).set('Authorization', token).send(invalidBody).expect(400);
     });
 
     it('[201] Should succeed: OK', async () => {
-      const token = testUser.token || '';
+      const testUser2: ITestUser = {};
+      const tokens = await login({ email: 'julien+admin@mail.com', password: 'julien+admin' });
+      if (tokens) {
+        testUser2.tokens = tokens;
+        testUser2.token = `Bearer ${tokens.accessToken}`;
+      }
+      const validBody = {
+        items: [
+          {
+            productId: product?._id,
+            quantity: 3,
+          },
+        ],
+      };
+      const url = `${baseURL}`;
+      const token = testUser2.token || '';
       const res = await request(app).post(url).set('Authorization', token).send(validBody).expect(201);
-      should(res.body).have.property('userId');
+      should(res.body).have.property('orderId');
     });
   });
 
-  describe('[PATCH] /users/:{userId}', () => {
-    const validBody = {
-      profile: {
-        role: 'admin',
-      },
+  describe('[PATCH] orders/:{orderId}', () => {
+    const invalidBody = {
+      items: [
+        {
+          productId: invalidMongoId,
+        },
+      ],
     };
-    const invalidBody = { profile: { role: 'manager' } };
 
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${user?._id}`;
+      const url = `${baseURL}/${order?._id}`;
       request(app).patch(url).expect(401);
     });
 
     it('[400] Should fail: Bad request', async () => {
-      const url = `${baseURL}/${user?._id}`;
+      const url = `${baseURL}/${order?._id}`;
       const token = testUser.token || '';
       request(app).patch(url).set('Authorization', token).send(invalidBody).expect(400);
     });
@@ -148,15 +149,29 @@ describe('USERS', () => {
     });
 
     it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${user?._id}`;
+      const testUser2: ITestUser = {};
+      const tokens = await login({ email: 'julien+admin@mail.com', password: 'julien+admin' });
+      if (tokens) {
+        testUser2.tokens = tokens;
+        testUser2.token = `Bearer ${tokens.accessToken}`;
+      }
+      const validBody = {
+        items: [
+          {
+            productId: product?._id,
+            quantity: 3,
+          },
+        ],
+      };
+      const url = `${baseURL}/${order?._id}`;
       const token = testUser.token || '';
       request(app).patch(url).set('Authorization', token).send(validBody).expect(200);
     });
   });
 
-  describe('[DELETE] /users/:{userId}', () => {
+  describe('[DELETE] orders/:{orderId}', () => {
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/${user?._id}`;
+      const url = `${baseURL}/${order?._id}`;
       request(app).delete(url).expect(401);
     });
 
@@ -173,19 +188,20 @@ describe('USERS', () => {
     });
 
     it('[200] Should succeed: OK', async () => {
-      const url = `${baseURL}/${user?._id}`;
+      const url = `${baseURL}/${order?._id}`;
       const token = testUser.token || '';
       request(app).delete(url).set('Authorization', token).expect(200);
     });
   });
 });
 
-export const validateUser = (user: IUserDocument) => {
-  should(user).have.property('_id');
-  should(user).have.property('username');
-  should(user).have.property('email');
-  should(user).have.property('storeIds');
-  should(user).have.propertyByPath('profile', 'role');
-  should(user).have.property('createdAt');
-  should(user).have.property('updatedAt');
+export const validateOrder = (order: IOrderDocument) => {
+  should(order).have.property('_id');
+  should(order).have.property('owner');
+  should(order).have.property('totalPrice');
+  should(order).have.property('orderNumber');
+  should(order).have.property('status');
+  should(order).have.property('items');
+  should(order).have.property('createdAt');
+  should(order).have.property('updatedAt');
 };

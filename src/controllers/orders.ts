@@ -43,7 +43,7 @@ export const addOrder = async (req: ExtendedRequest<AddOrderBody>, res: Response
     return handleError({ error: _error, next });
   }
 
-  res.status(HTTP_STATUS_CODES.OK).json(data);
+  res.status(HTTP_STATUS_CODES.CREATED).json(data);
 };
 
 export const getAllOrders = async (_req: ExtendedRequest<undefined>, res: Response, _next: NextFunction) => {

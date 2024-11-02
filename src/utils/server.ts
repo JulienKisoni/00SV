@@ -27,7 +27,9 @@ export const startServer = async (port: string, app: Application): Promise<http.
   function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr?.port}`;
-    console.info(`Server is listening on ${bind}`);
+    if (process.env.TEST_ENABLED !== 'true') {
+      console.info(`Server is listening on ${bind}`);
+    }
   }
   const DATABASE_URI = process.env.DATABASE_URI;
   let DATABASE_NAME = process.env.DATABASE_NAME;
@@ -42,7 +44,9 @@ export const startServer = async (port: string, app: Application): Promise<http.
   const connection_uri = `${DATABASE_URI}/${DATABASE_NAME}`;
   try {
     await connect(connection_uri);
-    console.log(`Connected to DB ${DATABASE_NAME}`);
+    if (process.env.TEST_ENABLED !== 'true') {
+      console.log(`Connected to DB ${DATABASE_NAME}`);
+    }
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);

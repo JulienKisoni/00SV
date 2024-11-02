@@ -82,7 +82,7 @@ describe('REVIEWS', () => {
 
   describe('[POST] /reviews', async () => {
     const testUser2: ITestUser = {};
-    const tokens = await login();
+    const tokens = await login({ email: 'julien+admin@mail.com', password: 'julien+admin' });
     if (tokens) {
       testUser2.tokens = tokens;
       testUser2.token = `Bearer ${tokens.accessToken}`;
@@ -97,18 +97,18 @@ describe('REVIEWS', () => {
     invalidBody.content = '';
 
     it('[401] Should fail: Unauthorized', async () => {
-      const url = `${baseURL}/reviews`;
+      const url = `${baseURL}`;
       request(app).post(url).expect(401);
     });
 
     it('[400] Should fail: Bad request', async () => {
-      const url = `${baseURL}/reviews`;
+      const url = `${baseURL}`;
       const token = testUser2.token || '';
       request(app).post(url).set('Authorization', token).send(invalidBody).expect(400);
     });
 
     it('[201] Should succeed: OK', async () => {
-      const url = `${baseURL}/reviews`;
+      const url = `${baseURL}`;
       const token = testUser2.token || '';
       const res = await request(app).post(url).set('Authorization', token).send(validBody).expect(201);
       should(res.body).have.property('reviewId');
