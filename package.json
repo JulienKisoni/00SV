@@ -13,7 +13,7 @@
     "build:clean": "rimraf ./dist --glob",
     "build": "yarn build:clean && tsc -p .",
     "start:test-server": "yarn build && yarn copyFiles && yarn start",
-    "test": "cross-env TS_NODE_PROJECT='./tsconfig.test.json' mocha --file 'tests/index.ts' --require ts-node/register 'tests/**/*.spec.ts' --exit",
+    "test": "cross-env TS_NODE_PROJECT='./tsconfig.test.json' mocha --recursive --file 'tests/index.ts' --require ts-node/register 'tests/**/*.spec.ts' --exit",
     "test2": "mocha './dist/tests/**/*.js'",
     "prettier": "prettier --write src/**/*.ts",
     "lint": "npm run prettier && eslint src/**/*.ts"

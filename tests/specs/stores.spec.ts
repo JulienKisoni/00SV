@@ -1,5 +1,6 @@
 import request from 'supertest';
 import should from 'should';
+import { type Server } from 'http';
 
 import { app } from '../../src/app';
 import { startServer } from '../../src/utils/server';
@@ -13,10 +14,11 @@ const baseURL = '/stores';
 let testUser: ITestUser = {};
 let user: IUserDocument | undefined;
 let store: IStoreDocument | undefined;
+let server: Server | undefined;
 
 describe('STORES', () => {
   before(async () => {
-    await startServer('8000', app);
+    server = await startServer('8000', app);
     const res = await seedDatabase();
     user = res.user;
     store = res.store;
@@ -29,7 +31,9 @@ describe('STORES', () => {
 
   after(async () => {
     await clearDatabase();
-    console.log('Database cleared');
+    if (server) {
+      server.close();
+    }
   });
 
   describe('[GET] /stores', () => {

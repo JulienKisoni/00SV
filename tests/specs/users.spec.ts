@@ -1,5 +1,6 @@
 import request from 'supertest';
 import should from 'should';
+import { type Server } from 'http';
 
 import { app } from '../../src/app';
 import { startServer } from '../../src/utils/server';
@@ -12,10 +13,11 @@ const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 const baseURL = '/users';
 let testUser: ITestUser = {};
 let user: IUserDocument | undefined;
+let server: Server | undefined;
 
 describe('USERS', () => {
   before(async () => {
-    await startServer('8000', app);
+    server = await startServer('8000', app);
     const res = await seedDatabase();
     user = res.user;
     const tokens = await login();
@@ -27,7 +29,10 @@ describe('USERS', () => {
 
   after(async () => {
     await clearDatabase();
-    console.log('Database cleared');
+    await clearDatabase();
+    if (server) {
+      server.close();
+    }
   });
 
   describe('[GET] /users', () => {

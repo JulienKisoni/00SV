@@ -4,6 +4,7 @@ import { connect } from 'mongoose';
 import { Application } from 'express';
 
 function onError(error: { syscall: string; code: string }) {
+  console.error('Error listening ', error);
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -21,7 +22,7 @@ function onError(error: { syscall: string; code: string }) {
   }
 }
 
-export const startServer = async (port: string, app: Application) => {
+export const startServer = async (port: string, app: Application): Promise<http.Server> => {
   const server = http.createServer(app);
   function onListening() {
     const addr = server.address();
@@ -47,5 +48,7 @@ export const startServer = async (port: string, app: Application) => {
     server.on('listening', onListening);
   } catch (error) {
     console.error(error);
+  } finally {
+    return server;
   }
 };

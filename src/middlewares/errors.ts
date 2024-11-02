@@ -25,6 +25,7 @@ export const errorHandler = (error: GenericError, _req: Request, res: Response, 
   if (process.env.TEST_ENABLED !== 'true') {
     console.error('**** Error Caught here ****** ', stack || message);
   }
+  console.error('**** Error Caught here ****** ', stack || message);
   res.status(statusCode).json({
     errors: [
       {
