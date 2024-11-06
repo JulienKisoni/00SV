@@ -30,10 +30,8 @@ export const errorHandler = async (error: GenericError, req: ExtendedRequest<any
   }
   const session = req.currentSession;
   if (session?.id) {
-    console.log('Session aborted id', session.id);
     await session.abortTransaction();
     await session.endSession();
-    console.log('Session aborted');
   }
   res.status(statusCode).json({
     errors: [
