@@ -3,6 +3,7 @@ import { type Options } from 'express-rate-limit';
 import { handleError } from '../middlewares/errors';
 import { createError } from '../middlewares/errors';
 import { HTTP_STATUS_CODES } from '../types/enums';
+import { ExtendedRequest } from '../types/models';
 
 export const nonSecureRoutes: { path: string; method: string }[] = [
   {
@@ -37,12 +38,12 @@ export const rateLimitConfig: Partial<Options> = {
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   skipSuccessfulRequests: true,
-  handler: (_, __, next, options) => {
+  handler: (req: ExtendedRequest<any>, __, next, options) => {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.FORBIDEN,
       message: options.message,
       publicMessage: 'Too many requests, please try again later.',
     });
-    return handleError({ error, next, currentSession: undefined });
+    return handleError({ error, next, currentSession: req.currentSession });
   },
 };

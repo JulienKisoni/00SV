@@ -70,8 +70,10 @@ export const handleError = async ({ error, statusCode, publicMessage, next, curr
     });
   }
   if (currentSession) {
+    console.log('Session aborted id', currentSession.id);
     await currentSession.abortTransaction();
     await currentSession.endSession();
+    console.log('Session aborted');
   }
   return next(_error);
 };

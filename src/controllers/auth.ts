@@ -41,6 +41,7 @@ export const login = async (req: ExtendedRequest<LoginBody>, res: Response, next
     }
     if (session) {
       await session.endSession();
+      console.log('Session ended');
     }
     res.status(HTTP_STATUS_CODES.OK).json(tokens);
   }
