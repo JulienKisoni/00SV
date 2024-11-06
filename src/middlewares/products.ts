@@ -34,9 +34,11 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
     storeId: params.storeId || req.storeId,
   };
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate({ params: payload }, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const { storeId, productId } = value.params;
   if (!storeId || !userId || !productId) {
@@ -45,7 +47,7 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
       message: `Either no user, storeId or productId`,
       publicMessage: 'Ressource not found',
     });
-    return next(error);
+    return handleError({ error, next, currentSession: session });
   }
   const product = await ProductModel.findOne({ _id: productId, storeId, owner: userId }).exec();
   if (!product?._id) {
@@ -54,7 +56,7 @@ export const isProductOwner = async (req: ExtendedRequest<undefined>, _res: Resp
       message: `User ${userId} may not be the owner of the store (${storeId}) or product (${productId})`,
       publicMessage: 'Please make sure the product and store exist and you are the owner of both',
     });
-    return next(error);
+    return handleError({ error, next, currentSession: session });
   }
   req.isProductOwner = true;
   req.productId = productId;
@@ -82,9 +84,11 @@ export const isNotProductOwner = async (req: ExtendedRequest<AddReviewBody>, _re
     owner: req.user?._id.toString(),
   };
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(payload, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const userId = value?.owner;
   const productId = value?.productId;
@@ -95,7 +99,7 @@ export const isNotProductOwner = async (req: ExtendedRequest<AddReviewBody>, _re
       message: `Either no userId (${userId}) or productId (${productId})`,
       publicMessage: 'Could not find associated user or product ',
     });
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const product = await ProductModel.findOne({ _id: productId, owner: userId }).exec();
@@ -107,7 +111,7 @@ export const isNotProductOwner = async (req: ExtendedRequest<AddReviewBody>, _re
     });
 
     req.isProductOwner = true;
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   req.isProductOwner = false;
   return next();
@@ -132,9 +136,11 @@ export const getProduct = async (req: ExtendedRequest<undefined>, _res: Response
     productId: Joi.string().regex(regex.mongoId).messages(productIdMessages),
   });
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(params);
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { productId, reviewId } = value;
@@ -157,7 +163,7 @@ export const getProduct = async (req: ExtendedRequest<undefined>, _res: Response
       publicMessage: 'Could not find any product associated with your request',
     });
     req.productId = undefined;
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   req.productId = product._id.toString();

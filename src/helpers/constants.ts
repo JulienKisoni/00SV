@@ -43,6 +43,6 @@ export const rateLimitConfig: Partial<Options> = {
       message: options.message,
       publicMessage: 'Too many requests, please try again later.',
     });
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: undefined });
   },
 };

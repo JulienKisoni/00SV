@@ -14,13 +14,14 @@ export const isOrderOwner = async (req: ExtendedRequest<undefined>, _res: Respon
     'any.required': 'Please provide a orderId',
     'string.pattern.base': 'Please provide a valid orderId',
   };
+  const session = req.currentSession;
   const schema = Joi.object<GetOneOrderParams>({
     orderId: Joi.string().regex(regex.mongoId).messages(orderIdMessages),
   });
 
   const { error, value } = schema.validate(params, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const { orderId } = value;
   const userId = req.user?._id.toString();
@@ -39,7 +40,7 @@ export const isOrderOwner = async (req: ExtendedRequest<undefined>, _res: Respon
       message: `User ${userId} may not be the owner of the order (${orderId})`,
       publicMessage: 'Please make sure the order exist and you are the owner',
     });
-    return next(error);
+    return handleError({ error, next, currentSession: session });
   }
   req.isOrderOwner = true;
   req.order = order;

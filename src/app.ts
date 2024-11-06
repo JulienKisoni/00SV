@@ -8,6 +8,7 @@ import { validateToken } from './middlewares/validateToken';
 import router from './routes/index';
 import { errorHandler } from './middlewares/errors';
 import { generateSwaggerDoc } from '../swagger';
+import { handleTransaction } from './middlewares/session-transaction';
 
 const app: express.Application = express();
 
@@ -23,6 +24,7 @@ const swaggerDoc = generateSwaggerDoc();
 app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use(validateToken);
+app.use(handleTransaction);
 app.use('/', router);
 
 // catch 404 and forward to error handler

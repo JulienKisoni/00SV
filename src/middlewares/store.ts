@@ -55,9 +55,11 @@ export const getStore = async (req: ExtendedRequest<undefined>, _res: Response, 
     productId: Joi.string().regex(regex.mongoId).messages(productIdMessages),
   });
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(params, { stripUnknown: true });
   if (error) {
-    return handleError({ next, error });
+    return handleError({ next, error, currentSession: session });
   }
   const { storeId, productId } = value;
   if (storeId) {
@@ -68,7 +70,7 @@ export const getStore = async (req: ExtendedRequest<undefined>, _res: Response, 
         message: `No associated store (${storeId}) found`,
         publicMessage: 'Please make sure the store exist',
       });
-      return next(error);
+      return handleError({ error, next, currentSession: session });
     }
     req.storeId = storeId;
     return next();
@@ -80,7 +82,7 @@ export const getStore = async (req: ExtendedRequest<undefined>, _res: Response, 
         message: `No associated product (${productId}) found`,
         publicMessage: 'Please make sure the product exist',
       });
-      return next(error);
+      return handleError({ error, next, currentSession: session });
     }
     req.storeId = product.storeId.toString();
     req.productId = productId;

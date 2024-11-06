@@ -60,14 +60,20 @@ export const addProduct = async (req: ExtendedRequest<AddProductBody>, res: Resp
     body: req.body,
   };
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(payload, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const owner = req.user?._id?.toString() || '';
   const { error: _error, data } = await productBusiness.addProduct({ owner, storeId: value.params.storeId, body: value.body });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
+  }
+
+  if (session) {
+    await session.endSession();
   }
   res.status(HTTP_STATUS_CODES.CREATED).json(data);
 };
@@ -80,13 +86,14 @@ export const getAllProducts = async (_req: Request, res: Response, _next: NextFu
 type GetStoreProductsPayload = API_TYPES.Routes['business']['products']['getByStoreId'];
 export const getStoreProducts = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const { storeId } = req;
+  const session = req.currentSession;
   if (!storeId) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.NOT_FOUND,
       message: `No store id (${storeId})`,
       publicMessage: 'The store does not exist',
     });
-    return next(error);
+    return handleError({ error, next, currentSession: session });
   }
 
   const storeIdMessages: LanguageMessages = {
@@ -99,29 +106,35 @@ export const getStoreProducts = async (req: ExtendedRequest<undefined>, res: Res
 
   const { error, value } = schema.validate({ storeId }, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { products } = await productBusiness.getStoreProducts({ storeId: value.storeId });
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json({ products });
 };
 
 export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const { storeId, productId } = req;
-
+  const session = req.currentSession;
   if (!storeId || !productId) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.BAD_REQUEST,
       message: `Missing either store id or product id`,
       publicMessage: 'Bad request',
     });
-    return next(error);
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error } = await productBusiness.deleteOne({ storeId, productId });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
+  }
+  if (session) {
+    await session.endSession();
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
@@ -137,6 +150,7 @@ export const getOne = async (req: ExtendedRequest<undefined>, res: Response, nex
     'any.required': 'Please provide a productId',
     'string.pattern.base': 'Please provide a valid productId',
   };
+  const session = req.currentSession;
   const schema = Joi.object<GetOneProductPayload>({
     params: {
       productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
@@ -145,14 +159,17 @@ export const getOne = async (req: ExtendedRequest<undefined>, res: Response, nex
 
   const { error, value } = schema.validate({ params }, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { data, error: _error } = await productBusiness.getOne({ productId: value.params.productId });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
 
@@ -171,6 +188,8 @@ export const updateOne = async (req: ExtendedRequest<UpdateProductBody>, res: Re
     'string.min': 'The field description must have 12 characters mininum',
     'string.max': 'The field description must have 100 characters maximum',
   };
+
+  const session = req.currentSession;
 
   const schema = Joi.object<UpdateProductSchema>({
     params: {
@@ -193,13 +212,16 @@ export const updateOne = async (req: ExtendedRequest<UpdateProductBody>, res: Re
 
   const { error, value } = schema.validate(payload, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error } = await productBusiness.updateOne({ productId: value.params.productId, body: value.body });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };

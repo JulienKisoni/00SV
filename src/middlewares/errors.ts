@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { mongo } from 'mongoose';
+
 import { HTTP_STATUS_CODES } from '../types/enums';
 import Joi from 'joi';
 
@@ -50,8 +52,9 @@ interface HandleErrorArgs {
   publicMessage?: string;
   statusCode?: number;
   next: NextFunction;
+  currentSession: mongo.ClientSession | undefined;
 }
-export const handleError = ({ error, statusCode, publicMessage, next }: HandleErrorArgs) => {
+export const handleError = async ({ error, statusCode, publicMessage, next, currentSession }: HandleErrorArgs) => {
   let _error;
   if (error instanceof Joi.ValidationError) {
     _error = convertToGenericError({ error });
@@ -65,6 +68,10 @@ export const handleError = ({ error, statusCode, publicMessage, next }: HandleEr
       message: 'Something went wrong',
       publicMessage: 'Something went wrong ',
     });
+  }
+  if (currentSession) {
+    await currentSession.abortTransaction();
+    await currentSession.endSession();
   }
   return next(_error);
 };

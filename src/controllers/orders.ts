@@ -20,6 +20,8 @@ export const addOrder = async (req: ExtendedRequest<AddOrderBody>, res: Response
     'number.min': 'Each item inside your order should at leat have quantity equals to 1',
   };
 
+  const session = req?.currentSession;
+
   const schema = Joi.object<AddOrderBody>({
     items: Joi.array()
       .items(
@@ -35,14 +37,16 @@ export const addOrder = async (req: ExtendedRequest<AddOrderBody>, res: Response
   const { error, value } = schema.validate(req.body, { stripUnknown: true, abortEarly: true });
 
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error, data } = await orderBusiness.addOrder({ body: value, owner });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
-
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.CREATED).json(data);
 };
 
@@ -55,23 +59,31 @@ type GetOneOrderParams = API_TYPES.Routes['params']['orders']['getOne'];
 export const getOneOrder = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const params = req.params as unknown as GetOneOrderParams;
   const { data, error } = await orderBusiness.getOneOrder({ order: req.order, orderId: params.orderId, userId: req.user?._id.toString() });
+  const session = req.currentSession;
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
+  }
+  if (session) {
+    await session.endSession();
   }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
 
 export const getUserOrders = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const userId = req.user?._id.toString();
+  const session = req.currentSession;
   if (!userId) {
     const error = createError({
       statusCode: HTTP_STATUS_CODES.UNAUTHORIZED,
       message: 'No user associated with the request',
       publicMessage: 'Please make sur you are logged in',
     });
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const { data } = await orderBusiness.getUserOrders({ userId });
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
 
@@ -79,8 +91,12 @@ type DeleteOneOrderParams = API_TYPES.Routes['params']['orders']['deleteOne'];
 export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const params = req.params as unknown as DeleteOneOrderParams;
   const { error } = await orderBusiness.deleteOne({ params, order: req.order });
+  const session = req.currentSession;
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
+  }
+  if (session) {
+    await session.endSession();
   }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
@@ -101,6 +117,8 @@ export const updateOne = async (req: ExtendedRequest<UpdateOneOrderBody>, res: R
     'any.only': 'Please provide a valid status',
   };
 
+  const session = req.currentSession;
+
   const schema = Joi.object<UpdateOneOrderBody>({
     items: Joi.array().items(
       Joi.object({
@@ -113,7 +131,7 @@ export const updateOne = async (req: ExtendedRequest<UpdateOneOrderBody>, res: R
 
   const { error, value } = schema.validate(req.body, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error, data } = await orderBusiness.updateOne({
@@ -123,8 +141,10 @@ export const updateOne = async (req: ExtendedRequest<UpdateOneOrderBody>, res: R
     order: req.order,
   });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
-
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };

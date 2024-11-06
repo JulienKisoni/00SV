@@ -31,6 +31,7 @@ export const addReview = async (req: ExtendedRequest<AddReviewBody>, res: Respon
     'number.min': 'The stars field value cannot be bellow 0',
     'number.max': 'The stars field value cannot be above 5',
   };
+  const session = req.currentSession;
   const schema = Joi.object<AddReviewPayload>({
     owner: Joi.string().regex(regex.mongoId).required().messages(ownerMessages),
     productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
@@ -46,23 +47,30 @@ export const addReview = async (req: ExtendedRequest<AddReviewBody>, res: Respon
 
   const { error, value } = schema.validate(payload, { stripUnknown: true, abortEarly: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error, data } = await reviewBusiness.addReview(value);
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
 
-export const getAllReviews = async (_req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
+export const getAllReviews = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
   const { error, data } = await reviewBusiness.getAllReviews();
+  const session = req.currentSession;
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };
 
@@ -79,14 +87,19 @@ export const getOneReview = async (req: ExtendedRequest<undefined>, res: Respons
     reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
   });
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(params);
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error, data } = await reviewBusiness.getOneReview(value);
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
+  }
+  if (session) {
+    await session.endSession();
   }
 
   res.status(HTTP_STATUS_CODES.OK).json(data);
@@ -109,6 +122,8 @@ export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, 
     'string.pattern.base': 'Associated product id seems not to be valid',
   };
 
+  const session = req.currentSession;
+
   const schema = Joi.object<DeleteOneReviewPayload>({
     body: {
       reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
@@ -125,12 +140,15 @@ export const deleteOne = async (req: ExtendedRequest<undefined>, res: Response, 
 
   const { error, value } = schema.validate(payload);
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error } = await reviewBusiness.deleteOne(value.body);
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
+  }
+  if (session) {
+    await session.endSession();
   }
 
   res.status(HTTP_STATUS_CODES.OK).json({});
@@ -174,16 +192,21 @@ export const updateOne = async (req: ExtendedRequest<UpdateOneReviewBody>, res: 
     body: req.body,
   };
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(payload, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { error: _error } = await reviewBusiness.updateOne({ reviewId: value.params.reviewId, body: value.body });
   if (_error) {
-    return handleError({ error: _error, next });
+    return handleError({ error: _error, next, currentSession: session });
   }
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json({});
 };
 
@@ -200,12 +223,17 @@ export const getProductReviews = async (req: ExtendedRequest<undefined>, res: Re
     productId: Joi.string().regex(regex.mongoId).required().messages(productIdMessages),
   });
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(params);
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const { data } = await reviewBusiness.getProductReviews(value);
 
+  if (session) {
+    await session.endSession();
+  }
   res.status(HTTP_STATUS_CODES.OK).json(data);
 };

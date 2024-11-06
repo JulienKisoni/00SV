@@ -1,4 +1,4 @@
-import { RootFilterQuery, Schema } from 'mongoose';
+import { RootFilterQuery, Schema, mongo } from 'mongoose';
 import { Request } from 'express';
 
 import { GenericError } from '../middlewares/errors';
@@ -75,6 +75,7 @@ export interface ExtendedRequest<B> extends Request {
   hasAlreadyRevieweProduct?: boolean;
   storeId?: string;
   productId?: string;
+  currentSession?: mongo.ClientSession;
 }
 
 export interface IReviewDocument extends Timestamps {

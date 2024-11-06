@@ -27,9 +27,11 @@ export const notAlreadyReviewed = async (req: ExtendedRequest<AddReviewBody>, _r
     owner: req.user?._id.toString(),
   };
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(payload, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   const userId = value?.owner;
   const productId = value?.productId;
@@ -40,7 +42,7 @@ export const notAlreadyReviewed = async (req: ExtendedRequest<AddReviewBody>, _r
       message: `Either no userId (${userId}) or productId (${productId})`,
       publicMessage: 'Could not find associated user or product ',
     });
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const review = await ReviewModel.findOne({ owner: userId, productId }).exec();
@@ -52,7 +54,7 @@ export const notAlreadyReviewed = async (req: ExtendedRequest<AddReviewBody>, _r
     });
 
     req.hasAlreadyRevieweProduct = true;
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   req.hasAlreadyRevieweProduct = false;
   return next();
@@ -72,9 +74,11 @@ export const isReviewOwner = async (req: ExtendedRequest<UpdateOneReviewBody>, _
     reviewId: Joi.string().regex(regex.mongoId).required().messages(reviewIdMessages),
   });
 
+  const session = req.currentSession;
+
   const { error, value } = schema.validate(params, { stripUnknown: true });
   if (error) {
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
 
   const userId = req.user?._id.toString();
@@ -88,7 +92,7 @@ export const isReviewOwner = async (req: ExtendedRequest<UpdateOneReviewBody>, _
       publicMessage: 'Only the owner of a review is allowed to update it',
     });
     req.isReviewOwner = false;
-    return handleError({ error, next });
+    return handleError({ error, next, currentSession: session });
   }
   req.isReviewOwner = true;
   return next();
