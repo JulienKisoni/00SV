@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { mongo } from 'mongoose';
 
 import { HTTP_STATUS_CODES } from '../types/enums';
 import Joi from 'joi';
+import { ExtendedRequest } from '../types/models';
 
 interface ErrorArgs {
   statusCode?: number;
@@ -22,12 +23,18 @@ export class GenericError extends Error {
   }
 }
 
-export const errorHandler = (error: GenericError, _req: Request, res: Response, _next: NextFunction) => {
+export const errorHandler = async (error: GenericError, req: ExtendedRequest<any>, res: Response, _next: NextFunction) => {
   const { statusCode = HTTP_STATUS_CODES.STH_WENT_WRONG, message, publicMessage = 'Something went wrong', stack } = error;
   if (process.env.TEST_ENABLED !== 'true') {
     console.error('**** Error Caught here ****** ', stack || message);
   }
-  console.error('**** Error Caught here ****** ', stack || message);
+  const session = req.currentSession;
+  if (session?.id) {
+    console.log('Session aborted id', session.id);
+    await session.abortTransaction();
+    await session.endSession();
+    console.log('Session aborted');
+  }
   res.status(statusCode).json({
     errors: [
       {
@@ -52,9 +59,9 @@ interface HandleErrorArgs {
   publicMessage?: string;
   statusCode?: number;
   next: NextFunction;
-  currentSession: mongo.ClientSession | undefined;
+  currentSession?: mongo.ClientSession | undefined;
 }
-export const handleError = async ({ error, statusCode, publicMessage, next, currentSession }: HandleErrorArgs) => {
+export const handleError = async ({ error, statusCode, publicMessage, next }: HandleErrorArgs) => {
   let _error;
   if (error instanceof Joi.ValidationError) {
     _error = convertToGenericError({ error });
@@ -68,12 +75,6 @@ export const handleError = async ({ error, statusCode, publicMessage, next, curr
       message: 'Something went wrong',
       publicMessage: 'Something went wrong ',
     });
-  }
-  if (currentSession) {
-    console.log('Session aborted id', currentSession.id);
-    await currentSession.abortTransaction();
-    await currentSession.endSession();
-    console.log('Session aborted');
   }
   return next(_error);
 };

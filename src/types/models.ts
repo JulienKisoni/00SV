@@ -112,3 +112,5 @@ export interface ITestUser {
   tokens?: API_TYPES.Tokens;
   token?: string;
 }
+
+export type MongoClientSession = mongo.ClientSession | undefined;

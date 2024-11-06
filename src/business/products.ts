@@ -48,8 +48,9 @@ export const addProduct = async ({ owner, storeId, body }: AddProductPayload): A
     storeId,
     ...body,
   });
-  product._id;
+
   const productId = product._id.toString();
+
   await StoreModel.findByIdAndUpdate(storeId, {
     $push: { products: productId },
   });
