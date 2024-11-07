@@ -166,16 +166,16 @@ describe('PRODUCTS', () => {
   });
 });
 
-export const validateProduct = (store: IProductDocument) => {
-  should(store).have.property('_id');
-  should(store).have.property('name');
-  should(store).have.property('quantity');
-  should(store).have.property('description');
-  should(store).have.property('minQuantity');
-  should(store).have.property('owner');
-  should(store).have.property('active');
-  should(store).have.property('unitPrice');
-  should(store).have.property('reviews');
-  should(store).have.property('createdAt');
-  should(store).have.property('updatedAt');
+export const validateProduct = (product: IProductDocument) => {
+  should(product).have.property('_id');
+  should(product).have.property('name');
+  should(product).have.property('quantity');
+  should(product).have.property('description');
+  should(product).have.property('minQuantity');
+  should(product).have.property('owner');
+  should(product).have.property('active');
+  should(product).have.property('unitPrice');
+  should(product).have.property('reviews');
+  should(product).have.property('createdAt');
+  should(product).have.property('updatedAt');
 };

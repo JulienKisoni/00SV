@@ -58,7 +58,7 @@ export const addReview = async (req: ExtendedRequest<AddReviewBody>, res: Respon
   if (session) {
     await session.endSession();
   }
-  res.status(HTTP_STATUS_CODES.OK).json(data);
+  res.status(HTTP_STATUS_CODES.CREATED).json(data);
 };
 
 export const getAllReviews = async (req: ExtendedRequest<undefined>, res: Response, next: NextFunction) => {
