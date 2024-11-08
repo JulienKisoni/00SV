@@ -32,7 +32,10 @@ export const transformUser = ({ user, excludedFields }: ITransformProduct): Part
   return omit(user, excludedFields);
 };
 
-interface AddUserPayload extends Omit<IUserDocument, '_id' | 'storeId' | 'createdAt' | 'updatedAt'> {
+interface AddUserPayload {
+  username: string;
+  email: string;
+  password: string;
   role: USER_ROLES;
 }
 type AddUserReturn = {
@@ -46,7 +49,7 @@ export const addUser = async ({ username, email, password, role }: AddUserPayloa
     const error = createError({
       statusCode: HTTP_STATUS_CODES.DUPLICATED_RESOURCE,
       publicMessage: 'User with this email already exist',
-      message: 'Cannot create user with exisint email ',
+      message: 'Cannot create user with existing email ',
     });
     return { error };
   }

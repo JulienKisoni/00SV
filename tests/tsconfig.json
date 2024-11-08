@@ -26,7 +26,7 @@
     "resolveJsonModule": true,
     "baseUrl": "."
   },
-  "files": ["./src/types/types.d.ts"],
+  "files": ["../src/types/types.d.ts"],
   "exclude": ["node_modules", "mocks", ".vscode"],
-  "include": ["./src/**/*.ts", "./swagger/**/*.ts", "tests/**/*.ts"]
+  "include": ["../src/**/*.ts", "../swagger/**/*.ts", "specs/**/*.spec.ts"]
 }
