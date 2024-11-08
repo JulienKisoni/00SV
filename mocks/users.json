@@ -10,5 +10,11 @@
     "password": "julien+admin",
     "email": "julien+admin@mail.com",
     "role": "admin"
+  },
+  {
+    "username": "julien+load",
+    "password": "julien+load",
+    "email": "julien+load@mail.com",
+    "role": "user"
   }
 ]
