@@ -2,11 +2,11 @@ import request from 'supertest';
 import should from 'should';
 import { type Server } from 'http';
 
-import { app } from '../../src/app';
-import { startServer } from '../../src/utils/server';
-import { clearDatabase, seedDatabase } from '../helpers';
-import { IProductDocument } from '../../src/types/models';
-import { validateProduct } from '../units/products.spec';
+import { app } from '../src/app';
+import { startServer } from '../src/utils/server';
+import { clearDatabase, seedDatabase } from '../tests/helpers';
+import { IProductDocument } from '../src/types/models';
+import { validateProduct } from '../tests/specs/products.spec';
 
 let server: Server | undefined;
 const urls = {
@@ -50,7 +50,7 @@ const payloads = {
   },
 };
 
-describe.only('E2E', () => {
+describe('E2E', () => {
   before(async () => {
     server = await startServer('8000', app);
     await seedDatabase();

@@ -1,0 +1,8 @@
+{
+  "extension": ["ts"],
+  "spec": "e2e/*.spec.ts",
+  "require": ["ts-node/register"],
+  "recursive": true,
+  "file": "tests/index.ts",
+  "exit": "true"
+}

@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
-import { ExtendedRequest } from 'src/types/models';
+import { ExtendedRequest } from '../types/models';
 
 export const handleTransaction = async (req: ExtendedRequest<any>, _res: Response, next: NextFunction) => {
   const session = await mongoose.startSession();
