@@ -58,9 +58,9 @@ export const addProduct = async ({ owner, storeId, body }: AddProductPayload): A
 };
 
 type GetAllProductsReturn = Promise<{ products: Partial<IProductDocument>[] }>;
-export const gettAllProducts = async (): GetAllProductsReturn => {
+export const getAllProducts = async (): GetAllProductsReturn => {
   const response = await ProductModel.find<IProductDocument>({ active: true }).lean().exec();
-  const products = response.map((product) => transformProduct({ product, excludedFields: ['__v'] }));
+  const products = response?.map((product) => transformProduct({ product, excludedFields: ['__v'] }));
   return { products: products || [] };
 };
 

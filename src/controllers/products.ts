@@ -79,7 +79,7 @@ export const addProduct = async (req: ExtendedRequest<AddProductBody>, res: Resp
 };
 
 export const getAllProducts = async (_req: Request, res: Response, _next: NextFunction) => {
-  const { products } = await productBusiness.gettAllProducts();
+  const { products } = await productBusiness.getAllProducts();
   res.status(HTTP_STATUS_CODES.OK).json({ products });
 };
 

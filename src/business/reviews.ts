@@ -9,7 +9,7 @@ import { ReviewModel } from '../models/review';
 import { transformProduct } from './products';
 import { transformUser } from './users';
 
-const retrieveReview = async (filters: RetreiveOneFilters<IReviewDocument>): Promise<IReviewDocument | null> => {
+export const retrieveReview = async (filters: RetreiveOneFilters<IReviewDocument>): Promise<IReviewDocument | null> => {
   const review = (await ReviewModel.findOne(filters).populate({ path: 'productId' }).populate({ path: 'owner' }).lean().exec()) as IReviewDocument;
   if (!review || review === null) {
     return null;
