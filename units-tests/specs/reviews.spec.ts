@@ -10,7 +10,7 @@ jest.mock('../../src/models/review.ts');
 const FAKE_ID = '670f198f1fc4fdd76bd0AAAA';
 const FAKE_ID2 = '670f198f1fc4fdd76bd0BBBB';
 
-describe.skip('Review business logics', () => {
+describe('Review business logics', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

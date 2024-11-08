@@ -10,7 +10,7 @@ jest.mock('../../src/utils/hash.ts');
 
 const FAKE_ID = '670f198f1fc4fdd76bd0AAAA';
 
-describe.skip('User business logics', () => {
+describe('User business logics', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
