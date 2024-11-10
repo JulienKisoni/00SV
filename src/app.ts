@@ -2,6 +2,7 @@ import createError from 'http-errors';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
+import * as Sentry from '@sentry/node';
 
 import httpLogger from './middlewares/httpLogger';
 import { validateToken } from './middlewares/validateToken';
@@ -10,9 +11,12 @@ import { errorHandler } from './middlewares/errors';
 import { generateSwaggerDoc } from '../swagger';
 import { handleTransaction } from './middlewares/session-transaction';
 
+const TEST_ENABLED = process.env.TEST_ENABLED === 'true';
+const LOAD_TEST_ENABLED = process.env.LOAD_TEST_ENABLED === 'true';
+
 const app: express.Application = express();
 
-if (process.env.TEST_ENABLED !== 'true') {
+if (!TEST_ENABLED) {
   app.use(httpLogger);
 }
 
@@ -26,6 +30,11 @@ app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.use(validateToken);
 app.use(handleTransaction);
 app.use('/', router);
+
+if (!TEST_ENABLED && !LOAD_TEST_ENABLED && Sentry) {
+  // The error handler must be registered before any other error middleware and after all controllers
+  Sentry.setupExpressErrorHandler(app);
+}
 
 // catch 404 and forward to error handler
 app.use((_req, _res, next) => {

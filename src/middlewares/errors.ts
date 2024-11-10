@@ -1,9 +1,11 @@
 import { NextFunction, Response } from 'express';
 import { mongo } from 'mongoose';
+import Joi from 'joi';
+import * as Sentry from '@sentry/node';
 
 import { HTTP_STATUS_CODES } from '../types/enums';
-import Joi from 'joi';
 import { ExtendedRequest } from '../types/models';
+import Logger from '../utils/logger';
 
 interface ErrorArgs {
   statusCode?: number;
@@ -25,17 +27,22 @@ export class GenericError extends Error {
 
 export const errorHandler = async (error: GenericError, req: ExtendedRequest<any>, res: Response, _next: NextFunction) => {
   const { statusCode = HTTP_STATUS_CODES.STH_WENT_WRONG, message, publicMessage = 'Something went wrong', stack } = error;
-  // if (process.env.TEST_ENABLED !== 'true') {
-  console.log('****** ERROR BEGINs ******');
-  console.error('Error Message  ', publicMessage);
-  console.error('Error Stack  ', stack || message);
-  console.log('****** ERROR ENDS ******');
-  // }
+  const exception = `Public message | ${publicMessage} | Stack: ${stack || message}`;
+  Logger.error(exception);
   const session = req.currentSession;
   if (session?.id) {
     await session.abortTransaction();
     await session.endSession();
   }
+  Sentry.withScope((scope) => {
+    const user: Sentry.User = {
+      id: req.user?._id.toString(),
+      email: req.user?.email,
+      username: req.user?.username,
+    };
+    scope.setUser(user);
+    Sentry.captureException(exception);
+  });
   res.status(statusCode).json({
     errors: [
       {

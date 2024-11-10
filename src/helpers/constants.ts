@@ -26,6 +26,10 @@ export const nonSecureRoutes: { path: string; method: string }[] = [
     path: '/favicon.ico',
     method: 'GET',
   },
+  {
+    path: '/debug-sentry',
+    method: 'GET',
+  },
 ];
 
 export const regex = {

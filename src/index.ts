@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+import './sentry/instrument';
 import { app } from './app';
 import { startServer } from './utils/server';
 

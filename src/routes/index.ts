@@ -19,6 +19,9 @@ const getController = (_req: Request, res: Response) => {
 
 /* GET home page. */
 router.get('/', getController);
+router.get('/debug-sentry', function mainHandler(_, __) {
+  throw new Error('My first Sentry error!');
+});
 
 router.use('/users', usersRouter);
 router.use('/stores', storesRouter);
