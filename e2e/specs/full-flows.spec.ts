@@ -2,11 +2,11 @@ import request from 'supertest';
 import should from 'should';
 import { type Server } from 'http';
 
-import { app } from '../src/app';
-import { startServer } from '../src/utils/server';
-import { clearDatabase, seedDatabase } from '../tests/helpers';
-import { IProductDocument } from '../src/types/models';
-import { validateProduct } from '../tests/specs/products.spec';
+import { app } from '../../src/app';
+import { startServer } from '../../src/utils/server';
+import { clearDatabase, seedDatabase } from '../../tests/helpers';
+import { IProductDocument } from '../../src/types/models';
+import { validateProduct } from '../../tests/specs/products.spec';
 
 let server: Server | undefined;
 const urls = {

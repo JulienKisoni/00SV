@@ -27,6 +27,6 @@
     "baseUrl": "."
   },
   "files": ["../src/types/types.d.ts"],
-  "exclude": ["node_modules", "mocks", ".vscode", "../tests/**/*.spec.ts"],
-  "include": ["../src/**/*.ts", "../swagger/**/*.ts", "e2e/**/*.ts"]
+  "exclude": ["node_modules", "mocks", ".vscode", "tests/specs/*.ts"],
+  "include": ["src/**/*.ts", "swagger/**/*.ts", "e2e/**/*.ts"]
 }
