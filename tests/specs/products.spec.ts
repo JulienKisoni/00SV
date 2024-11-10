@@ -11,7 +11,7 @@ import { validateReview } from './reviews.spec';
 
 const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 
-const baseURL = '/products';
+const baseURL = '/v1/products';
 let testUser: ITestUser = {};
 let product: IProductDocument | undefined;
 let server: Server | undefined;

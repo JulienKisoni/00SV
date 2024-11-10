@@ -29,7 +29,7 @@ app.use('/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use(validateToken);
 app.use(handleTransaction);
-app.use('/', router);
+app.use('/v1', router);
 
 if (!TEST_ENABLED && !LOAD_TEST_ENABLED && Sentry) {
   // The error handler must be registered before any other error middleware and after all controllers

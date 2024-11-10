@@ -10,7 +10,7 @@ import { login } from '../helpers/users';
 
 const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 
-const baseURL = '/reviews';
+const baseURL = '/v1/reviews';
 let testUser: ITestUser = {};
 let review: IReviewDocument | undefined;
 let product: IProductDocument | undefined;

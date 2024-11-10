@@ -64,9 +64,9 @@ describe('E2E', () => {
     }
   });
 
-  it('FROM USER REGISTRATION TO ORDER', async () => {
+  it('FROM USER REGISTRATION TO PLACE ORDER', async () => {
     // Signup
-    urls.signup = '/users/signup';
+    urls.signup = '/v1/users/signup';
     payloads.user.email = 'edouard@mail.com';
     payloads.user.password = 'edouard';
     payloads.user.username = 'edouard';
@@ -77,7 +77,7 @@ describe('E2E', () => {
     should(userId).be.String;
 
     // Login
-    urls.login = '/auth/login';
+    urls.login = '/v1/auth/login';
     const res2 = await request(app).post(urls.login).send({ email: payloads.user.email, password: payloads.user.password });
     should(res2.statusCode).equal(200);
     const token = res2.body.accessToken as string;
@@ -85,7 +85,7 @@ describe('E2E', () => {
     payloads.token = token;
 
     // Create store
-    urls.addStore = '/stores';
+    urls.addStore = '/v1/stores';
     payloads.store.name = 'Edouard store';
     payloads.store.description = 'Edouard store description';
     const res3 = await request(app).post(urls.addStore).set('Authorization', `Bearer ${payloads.token}`).send(payloads.store);
@@ -94,7 +94,7 @@ describe('E2E', () => {
     should(storeId).be.String;
 
     // Get existing products
-    urls.getProducts = '/products';
+    urls.getProducts = '/v1/products';
     const res4 = await request(app).get(urls.getProducts).set('Authorization', `Bearer ${payloads.token}`);
     should(res4.statusCode).equal(200);
     const existingProducts = res4.body.products as IProductDocument[];
@@ -103,7 +103,7 @@ describe('E2E', () => {
     });
 
     // Add product
-    urls.addProduct = `/stores/${storeId}/products`;
+    urls.addProduct = `/v1/stores/${storeId}/products`;
     payloads.product.name = 'Edouard product';
     payloads.product.description = 'Edouard product awesome description';
     payloads.product.quantity = 10;
@@ -115,7 +115,7 @@ describe('E2E', () => {
     should(productId).be.String;
 
     // Add review
-    urls.addReview = '/reviews';
+    urls.addReview = '/v1/reviews';
     payloads.review.title = 'Good product';
     payloads.review.content = 'This is a very good product';
     payloads.review.stars = 5;
@@ -126,7 +126,7 @@ describe('E2E', () => {
     should(reviewId).be.String;
 
     // Add order
-    urls.addOrder = '/orders';
+    urls.addOrder = '/v1/orders';
     payloads.order.items = existingProducts.map((product) => {
       return { productId: product._id.toString(), quantity: product.minQuantity };
     });

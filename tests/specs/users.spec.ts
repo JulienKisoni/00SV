@@ -11,7 +11,7 @@ import { validateOrder } from './orders.spec';
 
 const { invalidMongoId, nonExistingMongoId } = CONSTANTS;
 
-const baseURL = '/users';
+const baseURL = '/v1/users';
 let testUser: ITestUser = {};
 let user: IUserDocument | undefined;
 let server: Server | undefined;

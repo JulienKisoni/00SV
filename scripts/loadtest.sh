@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URL="http://localhost:8000/users"
+URL="http://localhost:8000/v1/users"
 REQUEST_NUMBER=10000
 REQUESTS_PER_SECONDS=500
 CONCURENCY=500
