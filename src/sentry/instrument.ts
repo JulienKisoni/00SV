@@ -15,5 +15,5 @@ if (!TEST_ENABLED && !LOAD_TEST_ENABLED && Sentry) {
     tracesSampleRate: 1.0, //  Capture 100% of the transactions
   });
 } else {
-  Logger.warning('Sentry profiling disabled');
+  Logger.warn('Sentry profiling disabled');
 }
